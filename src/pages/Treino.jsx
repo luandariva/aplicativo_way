@@ -20,6 +20,140 @@ const THUMB_POR_CATEGORIA = {
 }
 
 const CATEGORIA_SLUGS = new Set(['chest', 'upper', 'legs'])
+const YOUTUBE_ID_RE = /^[\w-]{11}$/
+
+/** URL segura para gravar em `exercicios[].video_url` (somente http/https). */
+function sanitizeVideoUrl(raw) {
+  const s = String(raw || '').trim()
+  if (!s) return null
+  try {
+    const u = new URL(s.includes('://') ? s : `https://${s}`)
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return null
+    return u.href
+  } catch {
+    return null
+  }
+}
+
+/**
+ * YouTube, Vimeo, arquivo direto (.mp4/.webm/.ogg) ou link genérico (abre em nova aba).
+ * @returns {{ kind: 'iframe', src: string } | { kind: 'video', src: string } | { kind: 'link', href: string } | null}
+ */
+function parseVideoEmbed(raw) {
+  const trimmed = String(raw || '').trim()
+  if (!trimmed) return null
+  let href
+  try {
+    href = new URL(trimmed.includes('://') ? trimmed : `https://${trimmed}`)
+  } catch {
+    return null
+  }
+  if (href.protocol !== 'http:' && href.protocol !== 'https:') return null
+
+  const host = href.hostname.replace(/^www\./, '').toLowerCase()
+
+  if (host === 'youtube.com' || host === 'm.youtube.com') {
+    const v = href.searchParams.get('v')
+    if (v && YOUTUBE_ID_RE.test(v)) {
+      return { kind: 'iframe', src: `https://www.youtube-nocookie.com/embed/${encodeURIComponent(v)}?rel=0` }
+    }
+    const shorts = href.pathname.match(/\/shorts\/([\w-]{11})/)
+    if (shorts?.[1] && YOUTUBE_ID_RE.test(shorts[1])) {
+      return { kind: 'iframe', src: `https://www.youtube-nocookie.com/embed/${encodeURIComponent(shorts[1])}?rel=0` }
+    }
+    const emb = href.pathname.match(/^\/embed\/([\w-]{11})/)
+    if (emb?.[1] && YOUTUBE_ID_RE.test(emb[1])) {
+      return { kind: 'iframe', src: `https://www.youtube-nocookie.com/embed/${encodeURIComponent(emb[1])}?rel=0` }
+    }
+    return null
+  }
+  if (host === 'youtu.be') {
+    const id = href.pathname.replace(/^\//, '').split('/')[0]
+    if (id && YOUTUBE_ID_RE.test(id)) {
+      return { kind: 'iframe', src: `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?rel=0` }
+    }
+    return null
+  }
+
+  if (host === 'vimeo.com' || host === 'player.vimeo.com') {
+    const parts = href.pathname.split('/').filter(Boolean)
+    const vid = parts[0] === 'video' ? parts[1] : parts[parts.length - 1]
+    if (vid && /^\d+$/.test(vid)) return { kind: 'iframe', src: `https://player.vimeo.com/video/${vid}` }
+    return null
+  }
+
+  const pathLower = href.pathname.toLowerCase()
+  if (/\.(mp4|webm|ogg)(\?|#|$)/i.test(pathLower)) return { kind: 'video', src: href.href }
+
+  return { kind: 'link', href: href.href }
+}
+
+function ExercicioVideoDemo({ url }) {
+  const parsed = parseVideoEmbed(url)
+  if (!parsed) return null
+
+  const wrap = {
+    position: 'relative',
+    width: '100%',
+    borderRadius: 12,
+    overflow: 'hidden',
+    background: '#0a0a0a',
+    aspectRatio: '16 / 9',
+    marginBottom: 12,
+  }
+
+  if (parsed.kind === 'iframe') {
+    return (
+      <div style={wrap}>
+        <iframe
+          title="Demonstracao do exercicio"
+          src={parsed.src}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="strict-origin-when-cross-origin"
+        />
+      </div>
+    )
+  }
+  if (parsed.kind === 'video') {
+    return (
+      <div style={wrap}>
+        <video
+          src={parsed.src}
+          controls
+          playsInline
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }}
+        >
+          Video nao suportado neste navegador.
+        </video>
+      </div>
+    )
+  }
+  return (
+    <a
+      href={parsed.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        display: 'block',
+        marginBottom: 12,
+        padding: '12px 14px',
+        borderRadius: 12,
+        background: 'var(--bg-input)',
+        border: '1px solid var(--border)',
+        color: 'var(--green)',
+        fontWeight: 700,
+        fontSize: 13,
+        textAlign: 'center',
+        textDecoration: 'none',
+      }}
+    >
+      Abrir video do exercicio
+    </a>
+  )
+}
 
 function normalizeCategoriaSlug(value) {
   if (value == null || typeof value !== 'string') return ''
@@ -158,6 +292,71 @@ function labelCategoria(categoria) {
   return 'Treino'
 }
 
+/**
+ * Ícones alinhados ao tipo de treino: pilha (todos), supino (peito), bíceps (MS), agachamento (pernas).
+ * Acessível via aria-label no botão.
+ */
+function IconFiltroCategoria({ id }) {
+  const common = {
+    width: 22,
+    height: 22,
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    xmlns: 'http://www.w3.org/2000/svg',
+    'aria-hidden': true,
+  }
+  const stroke = 'currentColor'
+  const sw = 1.75
+  if (id === 'all') {
+    return (
+      <svg {...common} stroke={stroke} strokeWidth={sw} strokeLinejoin="round" strokeLinecap="round">
+        {/* Pilha de fichas de treino (lista completa) */}
+        <rect x="5" y="3" width="14" height="5" rx="1.25" fill={stroke} fillOpacity={0.14} />
+        <rect x="4.5" y="6.5" width="15" height="5.5" rx="1.25" fill={stroke} fillOpacity={0.22} />
+        <rect x="4" y="10.5" width="16" height="7" rx="1.5" fill={stroke} fillOpacity={0.06} />
+        <line x1="7" y1="13" x2="14" y2="13" />
+        <line x1="7" y1="15.5" x2="12" y2="15.5" />
+      </svg>
+    )
+  }
+  if (id === 'chest') {
+    return (
+      <svg {...common} stroke={stroke} strokeWidth={sw} strokeLinejoin="round" strokeLinecap="round">
+        {/* Supino: corpo deitado + barra sobre o peito */}
+        <line x1="2" y1="18" x2="22" y2="18" />
+        <circle cx="7.5" cy="13" r="2.25" />
+        <path d="M9.5 13.5 L15 14.5 L17.5 16" />
+        <line x1="3.5" y1="10.5" x2="20.5" y2="10.5" />
+        <rect x="1" y="8.75" width="2.75" height="3.5" rx="0.6" />
+        <rect x="20.25" y="8.75" width="2.75" height="3.5" rx="0.6" />
+      </svg>
+    )
+  }
+  if (id === 'upper') {
+    return (
+      <svg {...common} stroke={stroke} strokeWidth={sw} strokeLinejoin="round" strokeLinecap="round">
+        {/* Braço em flexão de bíceps — braços, costas, ombros */}
+        <circle cx="17.5" cy="4.5" r="1.35" />
+        <path d="M17.5 5.6 L16.2 12.2 L9.5 7.2" />
+        <path d="M9.5 7.2 L10.8 4.8" />
+      </svg>
+    )
+  }
+  if (id === 'legs') {
+    return (
+      <svg {...common} stroke={stroke} strokeWidth={sw} strokeLinejoin="round" strokeLinecap="round">
+        {/* Agachamento: tronco, coxas e joelhos a ~90° */}
+        <circle cx="12" cy="5.5" r="2" />
+        <path d="M12 7.5 L12 10" />
+        <path d="M12 10 L8.2 15.2 L7 20.5" />
+        <path d="M12 10 L15.8 15.2 L17 20.5" />
+        <path d="M5.8 20.5 h3.6 M14.6 20.5 h3.6" />
+      </svg>
+    )
+  }
+  return null
+}
+
 function resetExercicios(exercicios) {
   return exercicios.map(ex => ({ ...ex, concluido: false, series_feitas: [] }))
 }
@@ -169,6 +368,7 @@ function novoExercicioBuilder() {
     series: '3',
     repeticoes: '12',
     carga: '',
+    video_url: '',
   }
 }
 
@@ -227,7 +427,12 @@ function ExercicioCard({ ex, index, onToggleSerie, onToggleConcluido, expandido,
             {ex.series}x{ex.repeticoes > 0 ? ex.repeticoes : 'falha'} {ex.carga > 0 ? `• ${ex.carga}kg` : ''} • {totalFeitas}/{ex.series}
           </p>
         </div>
-        <span style={{ color: 'var(--text-dim)' }}>{expandido ? '▴' : '▾'}</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-dim)', flexShrink: 0 }}>
+          {ex.video_url ? (
+            <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--green)' }} title="Tem video">▶</span>
+          ) : null}
+          <span>{expandido ? '▴' : '▾'}</span>
+        </span>
       </button>
 
       <div style={{ height: 3, background: 'rgba(255,255,255,0.06)', margin: '0 14px' }}>
@@ -236,6 +441,19 @@ function ExercicioCard({ ex, index, onToggleSerie, onToggleConcluido, expandido,
 
       {expandido && (
         <div style={{ padding: 14 }}>
+          {ex.video_url ? (
+            <>
+              <p style={{ fontSize: 11, color: 'var(--text-dim)', textTransform: 'uppercase', marginBottom: 8 }}>Como fazer</p>
+              <ExercicioVideoDemo url={ex.video_url} />
+              {!parseVideoEmbed(ex.video_url) ? (
+                <p style={{ fontSize: 12, color: '#ff7676', marginBottom: 12 }}>
+                  {sanitizeVideoUrl(ex.video_url)
+                    ? 'Link nao reconhecido. Use YouTube, Vimeo ou URL direta .mp4 / .webm.'
+                    : 'URL do video invalida.'}
+                </p>
+              ) : null}
+            </>
+          ) : null}
           <p style={{ fontSize: 11, color: 'var(--text-dim)', textTransform: 'uppercase', marginBottom: 8 }}>Series</p>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
             {Array.from({ length: ex.series }).map((_, i) => (
@@ -409,7 +627,7 @@ export default function Treino() {
       repeticoes: Math.max(0, Number(ex.repeticoes) || 0),
       carga: Math.max(0, Number(ex.carga) || 0),
       met: 0,
-      video_url: null,
+      video_url: sanitizeVideoUrl(ex.video_url),
     }))
 
     setBuilderSalvando(true)
@@ -727,6 +945,24 @@ export default function Treino() {
                         }}
                       />
                     </div>
+                    <input
+                      value={exercicio.video_url ?? ''}
+                      onChange={(e) => atualizarExercicioBuilder(exercicio.id, 'video_url', e.target.value)}
+                      placeholder="Video (YouTube, Vimeo ou .mp4) — opcional"
+                      inputMode="url"
+                      autoCapitalize="off"
+                      autoCorrect="off"
+                      spellCheck={false}
+                      style={{
+                        width: '100%',
+                        height: 38,
+                        borderRadius: 10,
+                        background: 'var(--bg-input)',
+                        border: '1px solid var(--border)',
+                        padding: '0 10px',
+                        fontSize: 13,
+                      }}
+                    />
                   </div>
                 ))}
               </div>
@@ -796,15 +1032,25 @@ export default function Treino() {
             return (
               <button
                 key={cat.id}
+                type="button"
+                title={cat.label}
+                aria-label={cat.label}
+                aria-pressed={ativo}
                 onClick={() => setFiltroCategoria(cat.id)}
                 style={{
-                  whiteSpace: 'nowrap', borderRadius: 12, padding: '8px 12px',
-                  fontSize: 12, fontWeight: 700, border: '1px solid var(--border)',
+                  flexShrink: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 44,
+                  height: 44,
+                  borderRadius: 12,
+                  border: '1px solid var(--border)',
                   background: ativo ? 'var(--green)' : 'var(--bg-card)',
                   color: ativo ? '#111' : 'var(--text-muted)',
                 }}
               >
-                {cat.label}
+                <IconFiltroCategoria id={cat.id} />
               </button>
             )
           })}
