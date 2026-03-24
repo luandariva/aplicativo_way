@@ -47,6 +47,66 @@ function isPlanoUuid(id) {
   return typeof id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)
 }
 
+/** jsonb pode vir como array ou string; evita lista vazia silenciosa */
+function parseExerciciosColumn(raw) {
+  if (Array.isArray(raw)) return raw
+  if (typeof raw === 'string') {
+    try {
+      const p = JSON.parse(raw)
+      return Array.isArray(p) ? p : []
+    } catch {
+      return []
+    }
+  }
+  return []
+}
+
+/** Remove entradas repetidas no JSON (mesmo id ou mesma assinatura sem id) */
+function dedupeExerciciosJson(list) {
+  const seen = new Set()
+  const out = []
+  for (const ex of list) {
+    if (!ex || typeof ex !== 'object') continue
+    const key = ex.id != null && String(ex.id).trim() !== ''
+      ? `id:${String(ex.id)}`
+      : `f:${String(ex.nome || '').trim()}|${Number(ex.series)}|${Number(ex.repeticoes)}|${Number(ex.carga)}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push(ex)
+  }
+  return out
+}
+
+/**
+ * Várias linhas iguais em treinos_plano (mesmo aluno + treino) viram cards duplicados.
+ * Mantém a mais recente (created_at) e preserva ordenação por data_prevista.
+ */
+function dedupePlanosRows(rows) {
+  if (!rows?.length) return []
+  const sortedNewestFirst = [...rows].sort((a, b) => {
+    const ta = new Date(a.created_at || 0).getTime()
+    const tb = new Date(b.created_at || 0).getTime()
+    return tb - ta
+  })
+  const seen = new Set()
+  const kept = []
+  for (const row of sortedNewestFirst) {
+    const raw = parseExerciciosColumn(row.exercicios)
+    const exKey = JSON.stringify(dedupeExerciciosJson(raw))
+    const key = `${String(row.nome || '').trim()}|${row.data_prevista || ''}|${exKey}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    kept.push(row)
+  }
+  kept.sort((a, b) => {
+    const da = String(a.data_prevista || '')
+    const db = String(b.data_prevista || '')
+    if (da !== db) return da.localeCompare(db)
+    return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+  })
+  return kept
+}
+
 function mapPlanoRowToTreino(row, options = {}) {
   const { personalizado: personalizadoOpt, categoria: categoriaOpt } = options
   const personalizado = personalizadoOpt !== undefined
@@ -56,8 +116,7 @@ function mapPlanoRowToTreino(row, options = {}) {
     normalizeCategoriaSlug(row.categoria) ||
     (categoriaOpt !== undefined ? normalizeCategoriaSlug(categoriaOpt) : '') ||
     inferCategoriaFromNome(row.nome)
-  const raw = row.exercicios
-  const list = Array.isArray(raw) ? raw : []
+  const list = dedupeExerciciosJson(parseExerciciosColumn(row.exercicios))
   const exercicios = list.map((ex, idx) => ({
     id: ex.id != null ? String(ex.id) : `${row.id}-ex-${idx + 1}`,
     nome: String(ex.nome || ''),
@@ -67,12 +126,18 @@ function mapPlanoRowToTreino(row, options = {}) {
     met: Number(ex.met) || 0,
     video_url: ex.video_url ?? null,
   }))
+  const personalNome = row.personais?.nome != null && String(row.personais.nome).trim() !== ''
+    ? String(row.personais.nome).trim()
+    : null
+  const personalLabel = personalizado
+    ? 'Treino personalizado'
+    : (personalNome || 'Plano')
   return {
     id: row.id,
     nome: row.nome || 'Treino',
     categoria: categoriaSlug,
     thumb: THUMB_POR_CATEGORIA[categoriaSlug] || THUMB_PERSONALIZADO,
-    personal: personalizado ? 'Treino personalizado' : 'Plano',
+    personal: personalLabel,
     exercicios,
     fromDb: true,
     personalizado,
@@ -259,7 +324,7 @@ export default function Treino() {
 
         const { data: planos, error: planosErr } = await supabase
           .from('treinos_plano')
-          .select('id, nome, personal_id, data_prevista, exercicios, criado_pelo_aluno, categoria, created_at')
+          .select('id, nome, personal_id, data_prevista, exercicios, criado_pelo_aluno, categoria, created_at, personais(nome)')
           .eq('usuario_id', usuarioId)
           .order('data_prevista', { ascending: true })
           .order('created_at', { ascending: false })
@@ -267,7 +332,7 @@ export default function Treino() {
         if (planosErr) throw planosErr
 
         if (alive) {
-          const lista = (planos || []).map((row) => mapPlanoRowToTreino(row))
+          const lista = dedupePlanosRows(planos || []).map((row) => mapPlanoRowToTreino(row))
           setTreinosPlano(lista)
         }
       } catch (err) {
