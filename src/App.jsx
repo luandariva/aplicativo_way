@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard'
 import Treino from './pages/Treino'
 import { Nutricao, Evolucao, Perfil } from './pages/Placeholders'
 import BottomNav from './components/BottomNav'
+import TrocarSenhaInicial from './pages/TrocarSenhaInicial'
 
 function PrivateLayout({ children }) {
   return (
@@ -18,7 +19,7 @@ function PrivateLayout({ children }) {
 }
 
 function PrivateRoute({ children }) {
-  const { user, loading } = useAuth()
+  const { user, loading, mustChangePassword } = useAuth()
   if (loading) return (
     <div style={{
       height: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -31,15 +32,25 @@ function PrivateRoute({ children }) {
       }}/>
     </div>
   )
-  return user ? children : <Navigate to="/login" replace />
+  if (!user) return <Navigate to="/login" replace />
+  if (mustChangePassword) return <Navigate to="/trocar-senha-inicial" replace />
+  return children
 }
 
 export default function App() {
-  const { user, loading } = useAuth()
+  const { user, loading, mustChangePassword } = useAuth()
   if (loading) return null
   return (
     <Routes>
       <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
+      <Route
+        path="/trocar-senha-inicial"
+        element={
+          user
+            ? (mustChangePassword ? <TrocarSenhaInicial /> : <Navigate to="/" replace />)
+            : <Navigate to="/login" replace />
+        }
+      />
       <Route path="/" element={
         <PrivateRoute>
           <PrivateLayout><Dashboard /></PrivateLayout>

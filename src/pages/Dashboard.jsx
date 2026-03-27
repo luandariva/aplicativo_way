@@ -1,130 +1,247 @@
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import GamifWidget from '../components/GamifWidget'
+import { useAuth } from '../hooks/useAuth'
+import { supabase } from '../lib/supabase'
+import { resolveUsuarioDb } from '../lib/usuarioDb'
+
+function toNum(value) {
+  const n = Number(value)
+  return Number.isFinite(n) ? n : 0
+}
+
+function inicioEFimDoDia() {
+  const inicio = new Date()
+  inicio.setHours(0, 0, 0, 0)
+  const fim = new Date(inicio)
+  fim.setDate(fim.getDate() + 1)
+  return { inicio, fim }
+}
 
 export default function Dashboard() {
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const [loading, setLoading] = useState(true)
+  const [erro, setErro] = useState('')
+  const [treinoHoje, setTreinoHoje] = useState(null)
+  const [treinoFoiConcluidoHoje, setTreinoFoiConcluidoHoje] = useState(false)
+  const [refeicoesHoje, setRefeicoesHoje] = useState([])
+
+  useEffect(() => {
+    let alive = true
+
+    async function carregarResumoRapido() {
+      if (!user?.id) {
+        if (alive) {
+          setErro('Usuario nao autenticado.')
+          setLoading(false)
+        }
+        return
+      }
+
+      setLoading(true)
+      setErro('')
+
+      try {
+        const { usuarioId } = await resolveUsuarioDb(user)
+        if (!usuarioId) throw new Error('Usuario nao encontrado.')
+
+        const { inicio, fim } = inicioEFimDoDia()
+        const hojeIso = inicio.toISOString().slice(0, 10)
+
+        const [treinoPlanoRes, treinoRealizadoRes, refeicoesRes] = await Promise.all([
+          supabase
+            .from('treinos_plano')
+            .select('id, nome, categoria, exercicios, data_prevista')
+            .eq('usuario_id', usuarioId)
+            .eq('data_prevista', hojeIso)
+            .order('created_at', { ascending: false })
+            .limit(1),
+          supabase
+            .from('treinos_realizados')
+            .select('id, nome, exercicios, concluido, data_hora')
+            .eq('usuario_id', usuarioId)
+            .gte('data_hora', inicio.toISOString())
+            .lt('data_hora', fim.toISOString())
+            .eq('concluido', true)
+            .order('data_hora', { ascending: false })
+            .limit(1),
+          supabase
+            .from('refeicoes')
+            .select('*')
+            .eq('usuario_id', usuarioId)
+            .gte('data_hora', inicio.toISOString())
+            .lt('data_hora', fim.toISOString())
+            .order('data_hora', { ascending: true }),
+        ])
+
+        if (treinoPlanoRes.error) throw treinoPlanoRes.error
+        if (treinoRealizadoRes.error) throw treinoRealizadoRes.error
+        if (refeicoesRes.error) throw refeicoesRes.error
+
+        if (!alive) return
+        const treinoConcluidoHoje = treinoRealizadoRes.data?.[0] || null
+        const treinoPlanejadoHoje = treinoPlanoRes.data?.[0] || null
+        setTreinoFoiConcluidoHoje(Boolean(treinoConcluidoHoje))
+        setTreinoHoje(treinoConcluidoHoje || treinoPlanejadoHoje || null)
+        setRefeicoesHoje(refeicoesRes.data || [])
+      } catch (err) {
+        if (alive) setErro(err?.message || 'Falha ao carregar resumo do dia.')
+      } finally {
+        if (alive) setLoading(false)
+      }
+    }
+
+    carregarResumoRapido()
+    return () => { alive = false }
+  }, [user?.id, user?.email])
+
+  const nomeSaudacao = useMemo(() => {
+    const nomeEmail = String(user?.email || '').split('@')[0]
+    return nomeEmail || 'Aluno'
+  }, [user?.email])
+
+  const resumoRefeicoes = useMemo(() => {
+    const total = refeicoesHoje.length
+    const pendentes = refeicoesHoje.filter((r) => String(r.status || '').toLowerCase().includes('pend')).length
+    const kcal = refeicoesHoje.reduce((acc, r) => acc + toNum(r.kcal ?? r.calorias ?? r.calorias_kcal), 0)
+    return { total, pendentes, kcal }
+  }, [refeicoesHoje])
+
+  const exerciciosTreinoHoje = Array.isArray(treinoHoje?.exercicios) ? treinoHoje.exercicios.length : 0
 
   return (
     <div style={{
-      minHeight: '100dvh', display: 'flex', flexDirection: 'column',
-      padding: '18px', paddingTop: 'calc(var(--safe-top) + 14px)',
-      paddingBottom: 'calc(84px + var(--safe-bottom))',
-      gap: 16, overflowY: 'auto',
+      minHeight: '100dvh',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 14,
+      padding: '16px',
+      paddingTop: 'calc(var(--safe-top) + 12px)',
+      paddingBottom: 'calc(86px + var(--safe-bottom))',
     }}>
-      <div style={{ animation: 'floatIn .35s ease both' }}>
-        <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 2 }}>Ola, Dariva</p>
+      <div>
+        <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Ola, {nomeSaudacao}</p>
         <h1 style={{
-          fontFamily: 'var(--font-display)', fontSize: 34, lineHeight: 1,
-          fontWeight: 900, color: 'var(--green)', letterSpacing: '-0.02em',
+          fontFamily: 'var(--font-display)',
+          fontSize: 32,
+          lineHeight: 1.05,
+          fontWeight: 900,
+          color: 'var(--green)',
         }}>
-          Bem-vindo de volta!
+          Resumo rapido do dia
         </h1>
       </div>
 
-      <div style={{ animation: 'floatIn .38s ease .04s both' }}>
-        <GamifWidget onVerConquistas={() => navigate('/perfil')} />
+      {loading && (
+        <div style={{
+          borderRadius: 12,
+          border: '1px solid var(--border)',
+          background: 'var(--bg-card)',
+          color: 'var(--text-muted)',
+          padding: 14,
+          fontSize: 13,
+        }}>
+          Carregando dados de treino e refeicoes...
+        </div>
+      )}
+
+      {!loading && erro && (
+        <div style={{
+          borderRadius: 12,
+          border: '1px solid var(--border)',
+          background: 'var(--bg-card)',
+          color: '#ff7676',
+          padding: 14,
+          fontSize: 13,
+        }}>
+          {erro}
+        </div>
+      )}
+
+      <div style={{
+        borderRadius: 16,
+        border: '1px solid var(--border)',
+        background: 'linear-gradient(145deg, #13161b, #0a0c0f)',
+        padding: 14,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+          <div>
+            <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Treino do dia</p>
+            <p style={{ fontSize: 20, fontFamily: 'var(--font-display)', fontWeight: 800 }}>
+              {treinoHoje?.nome || 'Sem treino planejado hoje'}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate('/treino')}
+            style={{
+              borderRadius: 10,
+              background: 'var(--green)',
+              color: '#111',
+              padding: '8px 10px',
+              fontWeight: 800,
+              fontSize: 12,
+            }}
+          >
+            Abrir treinos
+          </button>
+        </div>
+
+        <div style={{ marginTop: 10, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <div style={{ border: '1px solid var(--border)', borderRadius: 10, padding: '8px 10px', background: 'var(--bg-card)' }}>
+            <p style={{ fontSize: 11, color: 'var(--text-dim)' }}>Exercicios</p>
+            <p style={{ fontWeight: 800, fontFamily: 'var(--font-display)', fontSize: 18 }}>{exerciciosTreinoHoje}</p>
+          </div>
+          <div style={{ border: '1px solid var(--border)', borderRadius: 10, padding: '8px 10px', background: 'var(--bg-card)' }}>
+            <p style={{ fontSize: 11, color: 'var(--text-dim)' }}>Status</p>
+            <p style={{ fontWeight: 800, fontFamily: 'var(--font-display)', fontSize: 18 }}>
+              {treinoHoje ? (treinoFoiConcluidoHoje ? 'Concluido' : 'Pendente') : '--'}
+            </p>
+          </div>
+        </div>
       </div>
 
       <div style={{
-        borderRadius: 20, border: '1px solid var(--border)',
-        background: 'linear-gradient(145deg, #13161b, #0a0c0f)', padding: 16,
-        boxShadow: 'var(--shadow-soft)', animation: 'floatIn .4s ease .08s both',
+        borderRadius: 16,
+        border: '1px solid var(--border)',
+        background: 'var(--bg-card)',
+        padding: 14,
       }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '86px 1fr', alignItems: 'center', gap: 14 }}>
-          <div style={{
-            width: 82, height: 82, borderRadius: '50%',
-            border: '6px solid rgba(201,242,77,0.2)',
-            boxShadow: 'inset 0 0 0 3px rgba(201,242,77,0.55)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: 'var(--green)', fontWeight: 800, fontSize: 18,
-          }}>
-            84%
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+          <div>
+            <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Refeicoes de hoje</p>
+            <p style={{ fontSize: 20, fontFamily: 'var(--font-display)', fontWeight: 800 }}>
+              {resumoRefeicoes.total > 0 ? `${resumoRefeicoes.total} registradas` : 'Nenhuma refeicao registrada'}
+            </p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            {[
-              { label: 'Treinos na semana', value: '5' },
-              { label: 'Aderencia da dieta', value: '79%' },
-              { label: 'Meta de proteina', value: '98/160g' },
-              { label: 'Saldo do dia', value: '760 kcal' },
-            ].map((m) => (
-              <div key={m.label}>
-                <p style={{ fontSize: 11, color: 'var(--text-dim)' }}>{m.label}</p>
-                <p style={{
-                  fontSize: 20, fontWeight: 800, color: 'var(--green)',
-                  fontFamily: 'var(--font-display)', lineHeight: 1.05,
-                }}>
-                  {m.value}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-        <button type="button" style={{
-          width: '100%', marginTop: 12, borderRadius: 12, background: 'var(--green)',
-          color: '#111', padding: '10px 12px', fontSize: 12, fontWeight: 800,
-          textTransform: 'uppercase', letterSpacing: '0.04em',
-        }}>
-          Ver resumo completo
-        </button>
-      </div>
-
-      <div style={{ animation: 'floatIn .45s ease .12s both' }}>
-        <div style={{
-          borderRadius: 16,
-          border: '1px solid var(--border)',
-          background: 'var(--bg-card)',
-          padding: 14,
-        }}>
-          <h2 style={{ fontSize: 20, fontFamily: 'var(--font-display)', marginBottom: 10 }}>Apanhado geral</h2>
-          {[
-            { titulo: 'Dieta', detalhe: '3 refeicoes registradas · jantar pendente' },
-            { titulo: 'Treino', detalhe: 'Treino de costas disponivel para hoje' },
-            { titulo: 'Evolucao', detalhe: 'Aderencia semanal acima da media' },
-          ].map((item, i) => (
-            <div key={item.titulo} style={{
-              padding: '10px 0',
-              borderBottom: i < 2 ? '1px solid var(--border)' : 'none',
-            }}>
-              <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>{item.titulo}</p>
-              <p style={{ fontSize: 14 }}>{item.detalhe}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ animation: 'floatIn .5s ease .16s both' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-          <h2 style={{ fontSize: 22, fontFamily: 'var(--font-display)', fontWeight: 700 }}>Seus desafios</h2>
-          <button type="button" style={{
-            color: '#111',
-            background: 'var(--green)',
-            border: '1px solid rgba(0,0,0,0.25)',
-            borderRadius: 10,
-            padding: '6px 10px',
-            fontWeight: 800,
-            fontSize: 12,
-            lineHeight: 1,
-          }}>
-            Ver todos
+          <button
+            type="button"
+            onClick={() => navigate('/nutricao')}
+            style={{
+              borderRadius: 10,
+              background: 'var(--green)',
+              color: '#111',
+              padding: '8px 10px',
+              fontWeight: 800,
+              fontSize: 12,
+            }}
+          >
+            Abrir dieta
           </button>
         </div>
-        <div style={{
-          borderRadius: 16, border: '1px solid var(--border)', overflow: 'hidden',
-          minHeight: 190,
-          backgroundImage: 'linear-gradient(0deg, rgba(0,0,0,0.65), rgba(0,0,0,0.1)), url(https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=900&q=60)',
-          backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex',
-          flexDirection: 'column', justifyContent: 'flex-end', padding: 14,
-        }}>
-          <p style={{ fontSize: 21, fontWeight: 800, fontFamily: 'var(--font-display)' }}>Corrida na rua</p>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <p style={{ color: 'var(--green)', fontSize: 13, fontWeight: 700 }}>30 min</p>
-            <button type="button" style={{
-              width: 34, height: 34, borderRadius: '50%', background: 'var(--green)',
-              color: '#101010', display: 'flex', alignItems: 'center',
-              justifyContent: 'center', fontWeight: 800,
-            }}>
-              ▶
-            </button>
+
+        <div style={{ marginTop: 10, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+          <div style={{ border: '1px solid var(--border)', borderRadius: 10, padding: '8px 10px', background: 'var(--bg)' }}>
+            <p style={{ fontSize: 11, color: 'var(--text-dim)' }}>Total</p>
+            <p style={{ fontWeight: 800, fontFamily: 'var(--font-display)', fontSize: 18 }}>{resumoRefeicoes.total}</p>
+          </div>
+          <div style={{ border: '1px solid var(--border)', borderRadius: 10, padding: '8px 10px', background: 'var(--bg)' }}>
+            <p style={{ fontSize: 11, color: 'var(--text-dim)' }}>Pendentes</p>
+            <p style={{ fontWeight: 800, fontFamily: 'var(--font-display)', fontSize: 18 }}>{resumoRefeicoes.pendentes}</p>
+          </div>
+          <div style={{ border: '1px solid var(--border)', borderRadius: 10, padding: '8px 10px', background: 'var(--bg)' }}>
+            <p style={{ fontSize: 11, color: 'var(--text-dim)' }}>Kcal</p>
+            <p style={{ fontWeight: 800, fontFamily: 'var(--font-display)', fontSize: 18 }}>{resumoRefeicoes.kcal}</p>
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
 import { fetchGamificacaoResumo, fetchUsuarioBadges } from '../lib/gamificacao'
 import { BadgeToast, PontosToast } from '../components/GamifToasts'
+import { resolveUsuarioDb } from '../lib/usuarioDb'
 
 const CATEGORIAS = [
   { id: 'all', label: 'Todos os treinos' },
@@ -12,6 +13,14 @@ const CATEGORIAS = [
 ]
 
 const THUMB_PERSONALIZADO = 'https://images.unsplash.com/photo-1517964603305-11c0f6f66012?auto=format&fit=crop&w=900&q=60'
+
+/** Resposta RPC pode vir como array, objeto único ou null */
+function normalizarLinhasRpc(data) {
+  if (data == null) return []
+  if (Array.isArray(data)) return data
+  if (typeof data === 'object') return [data]
+  return []
+}
 
 /** Capas por tipo de treino (Unsplash) */
 const THUMB_POR_CATEGORIA = {
@@ -171,13 +180,6 @@ function inferCategoriaFromNome(nome) {
   return ''
 }
 
-function pick(obj, keys, fallback = null) {
-  for (const key of keys) {
-    if (obj && obj[key] !== undefined && obj[key] !== null) return obj[key]
-  }
-  return fallback
-}
-
 function isPlanoUuid(id) {
   return typeof id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)
 }
@@ -242,6 +244,18 @@ function dedupePlanosRows(rows) {
   return kept
 }
 
+/** Unifica linhas do catálogo (RPC + REST); a segunda lista só preenche ids em falta na primeira. */
+function mergeCatalogoPlanoRows(primary, secondary) {
+  const map = new Map()
+  for (const row of secondary || []) {
+    if (row?.id != null) map.set(String(row.id), row)
+  }
+  for (const row of primary || []) {
+    if (row?.id != null) map.set(String(row.id), row)
+  }
+  return [...map.values()]
+}
+
 function mapPlanoRowToTreino(row, options = {}) {
   const { personalizado: personalizadoOpt, categoria: categoriaOpt } = options
   const personalizado = personalizadoOpt !== undefined
@@ -264,9 +278,12 @@ function mapPlanoRowToTreino(row, options = {}) {
   const personalNome = row.personais?.nome != null && String(row.personais.nome).trim() !== ''
     ? String(row.personais.nome).trim()
     : null
+  const isCatalogo = Boolean(row.catalogo)
   const personalLabel = personalizado
     ? 'Treino personalizado'
-    : (personalNome || 'Plano')
+    : isCatalogo
+      ? (personalNome ? `${personalNome} · Academia` : 'Academia')
+      : (personalNome || 'Plano')
   return {
     id: row.id,
     nome: row.nome || 'Treino',
@@ -276,6 +293,7 @@ function mapPlanoRowToTreino(row, options = {}) {
     exercicios,
     fromDb: true,
     personalizado,
+    catalogo: isCatalogo,
   }
 }
 
@@ -489,6 +507,7 @@ export default function Treino() {
   const [treinosPlano, setTreinosPlano] = useState([])
   const [listaLoading, setListaLoading] = useState(true)
   const [listaError, setListaError] = useState('')
+  const [listaAviso, setListaAviso] = useState('')
   const [treinoSelecionadoId, setTreinoSelecionadoId] = useState(null)
   const [filtroCategoria, setFiltroCategoria] = useState('all')
   const [filtroPersonal, setFiltroPersonal] = useState('todos')
@@ -523,37 +542,111 @@ export default function Treino() {
 
       setListaLoading(true)
       setListaError('')
+      setListaAviso('')
 
       try {
-        let usuarioRow = null
-        const tentativasUsuario = [
-          supabase.from('usuarios').select('*').eq('auth_user_id', user.id).limit(1).maybeSingle(),
-          supabase.from('usuarios').select('*').eq('id', user.id).limit(1).maybeSingle(),
-          supabase.from('usuarios').select('*').eq('email', user.email).limit(1).maybeSingle(),
-        ]
-        for (const req of tentativasUsuario) {
-          const { data } = await req
-          if (data) {
-            usuarioRow = data
-            break
+        const { usuarioId } = await resolveUsuarioDb(user)
+        if (alive) setUsuarioDbId(usuarioId)
+
+        const planoSelect =
+          'id, nome, personal_id, data_prevista, exercicios, criado_pelo_aluno, categoria, created_at, catalogo, personais(nome)'
+
+        let planos = []
+        if (usuarioId) {
+          const { data, error: planosErr } = await supabase
+            .from('treinos_plano')
+            .select(planoSelect)
+            .eq('usuario_id', usuarioId)
+            .order('data_prevista', { ascending: true })
+            .order('created_at', { ascending: false })
+          if (planosErr) throw planosErr
+          planos = data || []
+        }
+
+        /** Catálogo: RPC (DEFINER) e REST com política treinos_plano_select_catalogo_aluno (se existir). */
+        const rpcCatalogo = await supabase.rpc('treinos_catalogo_para_aluno')
+        const rpcAcad = await supabase.rpc('aluno_academia_ids')
+        const fromRpc = !rpcCatalogo.error ? normalizarLinhasRpc(rpcCatalogo.data) : []
+
+        if (import.meta.env.DEV) {
+          if (rpcCatalogo.error) {
+            console.warn('[Treino] treinos_catalogo_para_aluno:', rpcCatalogo.error.message)
+          }
+          if (rpcAcad.error) {
+            console.warn('[Treino] aluno_academia_ids:', rpcAcad.error.message)
           }
         }
 
-        const usuarioId = pick(usuarioRow || {}, ['id', 'usuario_id'], user.id)
-        if (alive) setUsuarioDbId(usuarioId)
+        let academiaIds = [
+          ...new Set(
+            normalizarLinhasRpc(rpcAcad.data)
+              .map((row) => (row && typeof row === 'object' ? row.academia_id : row))
+              .filter(Boolean),
+          ),
+        ]
 
-        const { data: planos, error: planosErr } = await supabase
-          .from('treinos_plano')
-          .select('id, nome, personal_id, data_prevista, exercicios, criado_pelo_aluno, categoria, created_at, personais(nome)')
-          .eq('usuario_id', usuarioId)
-          .order('data_prevista', { ascending: true })
-          .order('created_at', { ascending: false })
+        /** Se a RPC devolveu vazio, tenta o mesmo vínculo via REST (RLS alunos_academia). */
+        if (academiaIds.length === 0) {
+          const { data: alRows, error: alErr } = await supabase
+            .from('alunos_academia')
+            .select('academia_id')
+            .eq('status', 'ativo')
+          if (import.meta.env.DEV && alErr) {
+            console.warn('[Treino] alunos_academia (fallback):', alErr.message)
+          }
+          if (!alErr && alRows?.length) {
+            academiaIds = [
+              ...new Set(alRows.map((r) => r.academia_id).filter(Boolean)),
+            ]
+          }
+        }
 
-        if (planosErr) throw planosErr
+        let fromRest = []
+        let catErr = null
+        if (academiaIds.length > 0) {
+          const res = await supabase
+            .from('treinos_plano')
+            .select(planoSelect)
+            .eq('catalogo', true)
+            .in('academia_id', academiaIds)
+            .order('data_prevista', { ascending: true })
+            .order('created_at', { ascending: false })
+          catErr = res.error
+          if (!res.error && res.data?.length) fromRest = res.data
+          if (import.meta.env.DEV && res.error) {
+            console.warn('[Treino] GET treinos_plano catalogo:', res.error.message)
+          }
+        }
+
+        const catalogoRows = mergeCatalogoPlanoRows(fromRpc, fromRest)
 
         if (alive) {
-          const lista = dedupePlanosRows(planos || []).map((row) => mapPlanoRowToTreino(row))
+          const merged = [...planos, ...catalogoRows]
+          const lista = dedupePlanosRows(merged).map((row) => mapPlanoRowToTreino(row))
           setTreinosPlano(lista)
+
+          if (lista.length === 0) {
+            const partes = []
+            if (!usuarioId) {
+              partes.push(
+                'Nao ha perfil em usuarios ligado a esta conta. Treinos prescritos ao seu nome nao aparecem; treinos gerais exigem utilizador vinculado em alunos_academia. Contacte a academia ou suporte.',
+              )
+            }
+            if (rpcCatalogo.error) {
+              partes.push(`Catálogo (RPC): ${rpcCatalogo.error.message}`)
+            }
+            if (rpcAcad.error) {
+              partes.push(`Academias (RPC): ${rpcAcad.error.message}`)
+            } else if (usuarioId && academiaIds.length === 0 && fromRpc.length === 0) {
+              partes.push(
+                'Sem vinculo em alunos_academia para esta sessao (ou status diferente de ativo). Peça à academia para o vincular no portal ou confirme que o e-mail em usuarios é o mesmo da conta de login.',
+              )
+            }
+            if (catErr?.message) {
+              partes.push(`Catálogo (REST): ${catErr.message}`)
+            }
+            if (partes.length) setListaAviso(partes.join(' '))
+          }
         }
       } catch (err) {
         if (alive) setListaError(err?.message || 'Falha ao carregar treinos.')
@@ -816,6 +909,20 @@ export default function Treino() {
             color: '#ff7676', padding: 14, fontSize: 13,
           }}>
             {listaError}
+          </div>
+        )}
+
+        {!listaLoading && listaAviso && (
+          <div style={{
+            borderRadius: 12,
+            border: '1px solid rgba(252, 211, 77, 0.45)',
+            background: 'rgba(252, 211, 77, 0.08)',
+            color: '#fcd34d',
+            padding: 14,
+            fontSize: 13,
+            lineHeight: 1.45,
+          }}>
+            {listaAviso}
           </div>
         )}
 
@@ -1154,6 +1261,15 @@ export default function Treino() {
                       Personalizado
                     </span>
                   )}
+                  {t.catalogo && (
+                    <span style={{
+                      padding: '6px 10px', borderRadius: 999, background: 'rgba(96,165,250,0.18)',
+                      border: '1px solid rgba(96,165,250,0.35)', fontSize: 11, fontWeight: 700,
+                      color: '#f5f7fa',
+                    }}>
+                      Academia
+                    </span>
+                  )}
                 </div>
                 <div style={{
                   width: 34, height: 34, borderRadius: '50%', background: 'var(--green)',
@@ -1165,12 +1281,42 @@ export default function Treino() {
             </button>
           ))}
 
-          {!listaLoading && treinosFiltrados.length === 0 && (
+          {!listaLoading && treinosFiltrados.length === 0 && todosTreinos.length > 0 && (
+            <div style={{
+              borderRadius: 12, border: '1px solid var(--border)', background: 'var(--bg-card)',
+              color: 'var(--text-dim)', textAlign: 'center', padding: 18,
+              display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
+            }}>
+              <p style={{ margin: 0 }}>
+                Nenhum treino corresponde aos filtros ou à busca. Treinos da academia ficam em chips como o nome do personal seguido de · Academia.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setFiltroCategoria('all')
+                  setFiltroPersonal('todos')
+                  setBusca('')
+                }}
+                style={{
+                  borderRadius: 12,
+                  border: '1px solid var(--green)',
+                  background: 'var(--green)',
+                  color: '#111',
+                  fontWeight: 800,
+                  padding: '10px 16px',
+                }}
+              >
+                Limpar filtros e busca
+              </button>
+            </div>
+          )}
+
+          {!listaLoading && treinosFiltrados.length === 0 && todosTreinos.length === 0 && (
             <div style={{
               borderRadius: 12, border: '1px solid var(--border)', background: 'var(--bg-card)',
               color: 'var(--text-dim)', textAlign: 'center', padding: 18,
             }}>
-              Nenhum treino encontrado para os filtros selecionados.
+              Nenhum treino na sua lista. Use o bloco Treino personalizado para criar um ou aguarde prescricao da academia.
             </div>
           )}
         </div>

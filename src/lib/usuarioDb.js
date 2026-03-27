@@ -9,7 +9,8 @@ function pick(obj, keys, fallback = null) {
 
 /**
  * Associa o utilizador Auth a `public.usuarios` (mesma ordem que Treino/Nutricao).
- * @returns {{ row: object | null, usuarioId: string }}
+ * Sem linha em `usuarios`, `usuarioId` fica null (não usar auth.uid() como FK de treinos_plano).
+ * @returns {{ row: object | null, usuarioId: string | null }}
  */
 export async function resolveUsuarioDb(user) {
   if (!user?.id) return { row: null, usuarioId: null }
@@ -28,10 +29,10 @@ export async function resolveUsuarioDb(user) {
     const { data, error } = await req
     if (error) continue
     if (data) {
-      const usuarioId = pick(data, ['id', 'usuario_id'], user.id)
-      return { row: data, usuarioId }
+      const usuarioId = pick(data, ['id', 'usuario_id'], null)
+      return { row: data, usuarioId: usuarioId || null }
     }
   }
 
-  return { row: null, usuarioId: user.id }
+  return { row: null, usuarioId: null }
 }

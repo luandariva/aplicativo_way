@@ -51,6 +51,7 @@ function BadgeLocked({ slug }) {
   const INFO = {
     primeiro_treino: { icone: '🏋️', titulo: 'Primeiro treino', descricao: 'Conclua seu primeiro treino no app.' },
     desafio_semana: { icone: '🏆', titulo: 'Campeão da semana', descricao: 'Complete o desafio semanal (atividade, treinos e macros).' },
+    quatro_refeicoes_dia: { icone: '🍽️', titulo: '4 refeições no dia', descricao: 'Registre pelo menos 4 refeições no mesmo dia.' },
   }
   const b = INFO[slug] || { icone: '🔒', titulo: slug, descricao: 'Conquista ainda não obtida.' }
   return (
@@ -80,10 +81,10 @@ const TABS = [
   { id: 'config', label: 'Config.' },
 ]
 
-const ALL_BADGE_SLUGS = ['primeiro_treino', 'desafio_semana']
+const ALL_BADGE_SLUGS = ['primeiro_treino', 'quatro_refeicoes_dia', 'desafio_semana']
 
 export default function Conquistas({ onVoltar, embeddedInPerfil }) {
-  const { user } = useAuth()
+  const { user, signOut } = useAuth()
   const navigate = useNavigate()
   const [tab, setTab] = useState('resumo')
   const [loading, setLoading] = useState(true)
@@ -95,6 +96,7 @@ export default function Conquistas({ onVoltar, embeddedInPerfil }) {
   const [optIn, setOptIn] = useState(true)
   const [msg, setMsg] = useState('')
   const [salvando, setSalvando] = useState(false)
+  const [signingOut, setSigningOut] = useState(false)
 
   useEffect(() => {
     let alive = true
@@ -121,7 +123,7 @@ export default function Conquistas({ onVoltar, embeddedInPerfil }) {
     }
     load()
     return () => { alive = false }
-  }, [user?.id])
+  }, [user?.id, user?.email])
 
   const badgeSlugsObtidos = new Set(badges.map(ub => ub.badge?.slug).filter(Boolean))
   const desafio = resumo?.desafio
@@ -459,6 +461,7 @@ export default function Conquistas({ onVoltar, embeddedInPerfil }) {
             )}
 
             <button
+              type="button"
               onClick={salvarConfig}
               disabled={salvando}
               style={{
@@ -468,6 +471,31 @@ export default function Conquistas({ onVoltar, embeddedInPerfil }) {
               }}
             >
               {salvando ? 'Salvando...' : 'Salvar configurações'}
+            </button>
+
+            <button
+              type="button"
+              disabled={signingOut}
+              onClick={() => {
+                if (signingOut) return
+                setSigningOut(true)
+                void signOut().finally(() => setSigningOut(false))
+              }}
+              style={{
+                width: '100%',
+                marginTop: 10,
+                padding: '14px 16px',
+                borderRadius: 14,
+                border: '1px solid rgba(239, 68, 68, 0.45)',
+                background: 'rgba(239, 68, 68, 0.08)',
+                color: '#f87171',
+                fontSize: 14,
+                fontWeight: 700,
+                cursor: signingOut ? 'wait' : 'pointer',
+                opacity: signingOut ? 0.65 : 1,
+              }}
+            >
+              {signingOut ? 'A sair…' : 'Sair'}
             </button>
           </>
         )}
