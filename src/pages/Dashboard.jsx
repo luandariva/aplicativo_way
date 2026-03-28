@@ -3,14 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
 import { resolveUsuarioDb } from '../lib/usuarioDb'
+import WeekCalendar from '../components/WeekCalendar'
 
 function toNum(value) {
   const n = Number(value)
   return Number.isFinite(n) ? n : 0
 }
 
-function inicioEFimDoDia() {
-  const inicio = new Date()
+function inicioEFimDoDia(baseDate = new Date()) {
+  const inicio = new Date(baseDate)
   inicio.setHours(0, 0, 0, 0)
   const fim = new Date(inicio)
   fim.setDate(fim.getDate() + 1)
@@ -20,6 +21,7 @@ function inicioEFimDoDia() {
 export default function Dashboard() {
   const navigate = useNavigate()
   const { user } = useAuth()
+  const [selectedDate, setSelectedDate] = useState(() => new Date())
   const [loading, setLoading] = useState(true)
   const [erro, setErro] = useState('')
   const [treinoHoje, setTreinoHoje] = useState(null)
@@ -45,7 +47,7 @@ export default function Dashboard() {
         const { usuarioId } = await resolveUsuarioDb(user)
         if (!usuarioId) throw new Error('Usuario nao encontrado.')
 
-        const { inicio, fim } = inicioEFimDoDia()
+        const { inicio, fim } = inicioEFimDoDia(selectedDate)
         const hojeIso = inicio.toISOString().slice(0, 10)
 
         const [treinoPlanoRes, treinoRealizadoRes, refeicoesRes] = await Promise.all([
@@ -93,7 +95,7 @@ export default function Dashboard() {
 
     carregarResumoRapido()
     return () => { alive = false }
-  }, [user?.id, user?.email])
+  }, [user?.id, user?.email, selectedDate])
 
   const nomeSaudacao = useMemo(() => {
     const nomeEmail = String(user?.email || '').split('@')[0]
@@ -132,6 +134,8 @@ export default function Dashboard() {
         </h1>
       </div>
 
+      <WeekCalendar selectedDate={selectedDate} onSelectDate={setSelectedDate} />
+
       {loading && (
         <div style={{
           borderRadius: 12,
@@ -168,7 +172,7 @@ export default function Dashboard() {
           <div>
             <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Treino do dia</p>
             <p style={{ fontSize: 20, fontFamily: 'var(--font-display)', fontWeight: 800 }}>
-              {treinoHoje?.nome || 'Sem treino planejado hoje'}
+              {treinoHoje?.nome || 'Sem treino planejado'}
             </p>
           </div>
           <button
@@ -209,7 +213,7 @@ export default function Dashboard() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
           <div>
-            <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Refeicoes de hoje</p>
+            <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Refeicoes do dia</p>
             <p style={{ fontSize: 20, fontFamily: 'var(--font-display)', fontWeight: 800 }}>
               {resumoRefeicoes.total > 0 ? `${resumoRefeicoes.total} registradas` : 'Nenhuma refeicao registrada'}
             </p>
