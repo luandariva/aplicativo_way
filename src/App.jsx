@@ -3,7 +3,8 @@ import { useAuth } from './hooks/useAuth'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Treino from './pages/Treino'
-import { Nutricao, Evolucao, Perfil } from './pages/Placeholders'
+import { Nutricao, Perfil } from './pages/Placeholders'
+import Historico from './pages/Historico'
 import BottomNav from './components/BottomNav'
 import TrocarSenhaInicial from './pages/TrocarSenhaInicial'
 
@@ -66,9 +67,9 @@ export default function App() {
           <PrivateLayout><Nutricao /></PrivateLayout>
         </PrivateRoute>
       }/>
-      <Route path="/evolucao" element={
+      <Route path="/historico" element={
         <PrivateRoute>
-          <PrivateLayout><Evolucao /></PrivateLayout>
+          <PrivateLayout><Historico /></PrivateLayout>
         </PrivateRoute>
       }/>
       <Route path="/perfil" element={
