@@ -26,11 +26,7 @@ function PrivateRoute({ children }) {
       height: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center',
       background: 'var(--bg)',
     }}>
-      <div style={{
-        width: 24, height: 24, border: '2px solid var(--border)',
-        borderTopColor: 'var(--green)', borderRadius: '50%',
-        animation: 'spin .7s linear infinite',
-      }}/>
+      <div className="spinner" />
     </div>
   )
   if (!user) return <Navigate to="/login" replace />

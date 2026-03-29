@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, useCallback } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
 import { resolveUsuarioDb } from '../lib/usuarioDb'
+import './Historico.css'
 
 function toNum(value) {
   const n = Number(value)
@@ -52,7 +53,7 @@ function dayKey(dateStr) {
 }
 
 /* ─── Icons ─── */
-function DumbbellIcon({ size = 18, color = '#34d399' }) {
+function DumbbellIcon({ size = 18, color = 'var(--lime)' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="m14.4 14.4 5.6 5.6" /><path d="M22 14.8v3.4c0 .8-.5 1.5-1.2 1.7l-1.3.4c-.6.2-1.3-.2-1.5-.8L18 19" />
@@ -65,7 +66,7 @@ function DumbbellIcon({ size = 18, color = '#34d399' }) {
   )
 }
 
-function MealIcon({ size = 18, color = '#ff914d' }) {
+function MealIcon({ size = 18, color = 'var(--amber)' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M18 8h1a4 4 0 0 1 0 8h-1" /><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
@@ -74,7 +75,7 @@ function MealIcon({ size = 18, color = '#ff914d' }) {
   )
 }
 
-function CalendarIcon({ size = 18, color = 'var(--text-dim)' }) {
+function CalendarIcon({ size = 18, color = 'var(--text-3)' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" />
@@ -83,7 +84,7 @@ function CalendarIcon({ size = 18, color = 'var(--text-dim)' }) {
   )
 }
 
-function ChevronIcon({ direction = 'down', size = 16, color = 'var(--text-dim)' }) {
+function ChevronIcon({ direction = 'down', size = 16, color = 'var(--text-3)' }) {
   const rotation = direction === 'up' ? 180 : 0
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: `rotate(${rotation}deg)`, transition: 'transform .2s' }}>
@@ -94,7 +95,7 @@ function ChevronIcon({ direction = 'down', size = 16, color = 'var(--text-dim)' 
 
 function EmptyIcon({ size = 48 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
       <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
     </svg>
   )
@@ -233,102 +234,39 @@ export default function Historico() {
   ]
 
   return (
-    <div style={{
-      minHeight: '100dvh',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 16,
-      padding: '16px',
-      paddingTop: 'calc(var(--safe-top) + 12px)',
-      paddingBottom: 'calc(86px + var(--safe-bottom))',
-    }}>
+    <div className="hist-container">
       {/* ─── Header ─── */}
-      <div style={{ animation: 'floatIn .4s ease-out' }}>
-        <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 2 }}>Acompanhamento</p>
-        <h1 style={{
-          fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 900,
-          background: 'linear-gradient(135deg, var(--green) 0%, #a8d83a 100%)',
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-          letterSpacing: -0.5,
-        }}>
-          Histórico
-        </h1>
+      <div className="hist-header">
+        <p style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 2 }}>Acompanhamento</p>
+        <h1 className="hist-title">Histórico</h1>
       </div>
 
       {/* ─── Stats Overview ─── */}
-      <div style={{
-        borderRadius: 22,
-        background: 'linear-gradient(145deg, rgba(15,16,18,0.95), rgba(23,25,29,0.85))',
-        padding: '18px 16px',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04)',
-        border: '1px solid rgba(255,255,255,0.06)',
-        backdropFilter: 'blur(20px)',
-        animation: 'floatIn .45s ease-out .05s both',
-        position: 'relative',
-        overflow: 'hidden',
-      }}>
-        {/* Decorative glow */}
-        <div style={{
-          position: 'absolute', top: -30, right: -30,
-          width: 100, height: 100, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(201,242,77,0.07) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }} />
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8 }}>
+      <div className="resumo-card anim" style={{ padding: 16 }}>
+        <div className="stats-grid">
           {[
-            { label: 'Treinos', value: stats.trTotal, color: '#34d399' },
-            { label: 'Refeições', value: stats.refTotal, color: '#ff914d' },
-            { label: 'Kcal total', value: stats.kcalTotal > 9999 ? `${(stats.kcalTotal / 1000).toFixed(1)}k` : stats.kcalTotal, color: '#ff5e5e' },
-            { label: 'Dias ativos', value: stats.diasAtivos, color: '#5f9dff' },
+            { label: 'Treinos', value: stats.trTotal, color: 'var(--lime)' },
+            { label: 'Refeições', value: stats.refTotal, color: 'var(--amber)' },
+            { label: 'Kcal', value: stats.kcalTotal > 9999 ? `${(stats.kcalTotal / 1000).toFixed(1)}k` : stats.kcalTotal, color: 'var(--red)' },
+            { label: 'Dias', value: stats.diasAtivos, color: 'var(--blue)' },
           ].map((s) => (
-            <div key={s.label} style={{
-              textAlign: 'center',
-              padding: '8px 4px',
-              borderRadius: 14,
-              background: 'rgba(255,255,255,0.02)',
-              border: '1px solid rgba(255,255,255,0.04)',
-            }}>
-              <div style={{
-                fontSize: 20, fontFamily: 'var(--font-display)', fontWeight: 800,
-                color: s.color, lineHeight: 1.1,
-              }}>{s.value}</div>
-              <div style={{ fontSize: 10, color: 'var(--text-dim)', marginTop: 3, fontWeight: 600, letterSpacing: 0.2 }}>
-                {s.label}
-              </div>
+            <div key={s.label} className="stat-item">
+              <div className="stat-value" style={{ color: s.color }}>{s.value}</div>
+              <div className="stat-label">{s.label}</div>
             </div>
           ))}
         </div>
       </div>
 
       {/* ─── Filter Tabs ─── */}
-      <div style={{
-        display: 'flex', gap: 8,
-        animation: 'floatIn .45s ease-out .1s both',
-      }}>
+      <div className="tab-group">
         {tabs.map((tab) => {
           const ativo = tab.id === filtro
           return (
             <button
               key={tab.id}
-              type="button"
               onClick={() => setFiltro(tab.id)}
-              style={{
-                flex: 1,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                whiteSpace: 'nowrap',
-                borderRadius: 14,
-                padding: '10px 12px',
-                fontSize: 12,
-                fontWeight: 700,
-                border: ativo ? '1px solid rgba(201,242,77,0.3)' : '1px solid rgba(255,255,255,0.07)',
-                background: ativo
-                  ? 'linear-gradient(135deg, rgba(201,242,77,0.15), rgba(201,242,77,0.05))'
-                  : 'rgba(255,255,255,0.025)',
-                color: ativo ? 'var(--green)' : 'var(--text-dim)',
-                transition: 'all .2s ease',
-                letterSpacing: 0.3,
-              }}
+              className={`tab-btn ${ativo ? 'active' : ''}`}
             >
               <span style={{ fontSize: 14 }}>{tab.icon}</span>
               {tab.label}
@@ -339,280 +277,117 @@ export default function Historico() {
 
       {/* ─── Loading ─── */}
       {loading && (
-        <div style={{
-          borderRadius: 16,
-          border: '1px solid var(--border)',
-          background: 'var(--bg-card)',
-          padding: '24px 16px',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-          animation: 'floatIn .4s ease-out',
-        }}>
-          <div style={{
-            width: 20, height: 20, border: '2px solid var(--border)',
-            borderTopColor: 'var(--green)', borderRadius: '50%',
-            animation: 'spin .7s linear infinite',
-          }} />
-          <span style={{ color: 'var(--text-muted)', fontSize: 13 }}>Carregando histórico...</span>
+        <div className="dash-loading anim">
+          <div className="spinner" />
+          <span>Carregando histórico...</span>
         </div>
       )}
 
       {/* ─── Error ─── */}
       {!loading && erro && (
-        <div style={{
-          borderRadius: 16,
-          border: '1px solid rgba(225,95,95,0.2)',
-          background: 'rgba(225,95,95,0.06)',
-          padding: '14px 16px',
-          color: '#ff7676',
-          fontSize: 13,
-          animation: 'floatIn .4s ease-out',
-        }}>
+        <div className="dash-warning anim">
           {erro}
         </div>
       )}
 
       {/* ─── Empty State ─── */}
       {!loading && !erro && items.length === 0 && (
-        <div style={{
-          borderRadius: 22,
-          border: '1px solid var(--border)',
-          background: 'var(--bg-card)',
-          padding: '40px 20px',
-          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
-          animation: 'floatIn .5s ease-out',
-        }}>
+        <div className="dash-warning anim" style={{ padding: '40px 20px', flexDirection: 'column', gap: 12 }}>
           <EmptyIcon />
-          <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-muted)' }}>
-            Nenhum registro encontrado
-          </p>
-          <p style={{ fontSize: 12, color: 'var(--text-dim)', textAlign: 'center', lineHeight: 1.5 }}>
-            {filtro === 'treino'
-              ? 'Seus treinos concluídos aparecerão aqui.'
-              : filtro === 'refeicao'
-                ? 'Suas refeições registradas aparecerão aqui.'
-                : 'Registre treinos e refeições para ver seu histórico.'}
-          </p>
+          <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-2)' }}>Nenhum registro encontrado</p>
         </div>
       )}
 
       {/* ─── Timeline ─── */}
       {!loading && !erro && grouped.map(([key, group], groupIdx) => (
-        <div key={key} style={{ animation: `floatIn .45s ease-out ${0.1 + groupIdx * 0.04}s both` }}>
-          {/* Day header */}
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            marginBottom: 10,
-          }}>
-            <CalendarIcon size={14} color="var(--green-dim)" />
-            <span style={{
-              fontSize: 13, fontWeight: 700, color: 'var(--green)',
-              fontFamily: 'var(--font-display)',
-              letterSpacing: 0.2,
-              textTransform: 'capitalize',
-            }}>
-              {group.dateLabel}
-            </span>
-            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
-            <span style={{ fontSize: 11, color: 'var(--text-dim)', fontWeight: 600 }}>
-              {group.items.length} {group.items.length === 1 ? 'registro' : 'registros'}
-            </span>
+        <div key={key} className="timeline-group anim" style={{ animationDelay: `${0.1 + groupIdx * 0.05}s` }}>
+          <div className="day-header">
+            <span className="day-label">{group.dateLabel}</span>
+            <div className="day-line" />
+            <span className="day-count">{group.items.length} {group.items.length === 1 ? 'item' : 'itens'}</span>
           </div>
 
-          {/* Items */}
-          <div style={{
-            borderRadius: 18,
-            background: 'rgba(255,255,255,0.02)',
-            border: '1px solid rgba(255,255,255,0.05)',
-            overflow: 'hidden',
-          }}>
+          <div className="hist-list">
             {group.items.map((item, idx) => {
               const isExpanded = expandedId === item.id
               const isTreino = item.type === 'treino'
-              const accentColor = isTreino ? '#34d399' : '#ff914d'
-              const bgAccent = isTreino ? 'rgba(52,211,153,0.08)' : 'rgba(255,145,77,0.08)'
+              const accentColor = isTreino ? 'var(--lime)' : 'var(--amber)'
+              const bgAccent = isTreino ? 'var(--lime-dim)' : 'rgba(255, 145, 77, 0.08)'
 
               return (
                 <div key={item.id}>
-                  {/* Main row */}
                   <button
                     type="button"
                     onClick={() => toggleExpand(item.id)}
-                    style={{
-                      width: '100%',
-                      textAlign: 'left',
-                      border: 'none',
-                      background: isExpanded ? bgAccent : 'transparent',
-                      color: 'var(--text)',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      padding: '14px 14px',
-                      borderBottom: idx < group.items.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-                      transition: 'background .2s ease',
-                    }}
+                    className={`hist-item-btn ${isExpanded ? 'expanded' : ''}`}
                   >
-                    {/* Icon */}
-                    <div style={{
-                      width: 40, height: 40, borderRadius: 13, flexShrink: 0,
-                      background: `linear-gradient(135deg, ${accentColor}20, ${accentColor}08)`,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      border: `1px solid ${accentColor}15`,
-                    }}>
-                      {isTreino ? <DumbbellIcon size={18} color={accentColor} /> : <MealIcon size={18} color={accentColor} />}
+                    <div className="icon-box" style={{ background: isTreino ? 'var(--lime-dim)' : 'rgba(255,145,77,0.1)', borderColor: isTreino ? 'var(--lime-border)' : 'rgba(255,145,77,0.2)' }}>
+                      {isTreino ? <DumbbellIcon size={20} color={accentColor} /> : <MealIcon size={20} color={accentColor} />}
                     </div>
 
-                    {/* Info */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{
-                        fontSize: 14, fontWeight: 700, color: '#fff',
-                        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                      }}>
-                        {item.nome}
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
-                        <span style={{ fontSize: 11, color: 'var(--text-dim)' }}>
-                          {formatTime(item.data)}
-                        </span>
-                        {isTreino && (
-                          <span style={{
-                            fontSize: 10, fontWeight: 700, letterSpacing: 0.3,
-                            color: item.concluido ? '#34d399' : '#efb144',
-                            background: item.concluido ? 'rgba(52,211,153,0.12)' : 'rgba(239,177,68,0.12)',
-                            padding: '2px 7px', borderRadius: 6,
-                          }}>
-                            {item.concluido ? 'Concluído' : 'Pendente'}
+                    <div className="hist-item-info">
+                      <div className="hist-item-title">{item.nome}</div>
+                      <div className="hist-item-meta">
+                        <span>{formatTime(item.data)}</span>
+                        {isTreino ? (
+                          <span className={`badge-status ${item.concluido ? 'concluido' : 'pendente'}`}>
+                            {item.concluido ? '✓ OK' : '○ PENDENTE'}
                           </span>
-                        )}
-                        {!isTreino && (
-                          <span style={{
-                            fontSize: 10, fontWeight: 700, letterSpacing: 0.3,
-                            color: '#ff914d',
-                          }}>
-                            {item.kcal} kcal
-                          </span>
+                        ) : (
+                          <span style={{ color: 'var(--amber)', fontWeight: 700 }}>{item.kcal} kcal</span>
                         )}
                       </div>
                     </div>
 
-                    {/* Chevron */}
-                    <ChevronIcon direction={isExpanded ? 'up' : 'down'} color={isExpanded ? accentColor : 'var(--text-dim)'} />
+                    <ChevronIcon direction={isExpanded ? 'up' : 'down'} color={isExpanded ? accentColor : 'var(--text-3)'} />
                   </button>
 
-                  {/* Expanded details */}
                   {isExpanded && (
-                    <div style={{
-                      padding: '0 14px 14px',
-                      background: bgAccent,
-                      animation: 'floatIn .25s ease-out',
-                    }}>
+                    <div className="details-box">
                       {isTreino ? (
-                        <div>
-                          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
-                            {item.categoria && (
-                              <span style={{
-                                fontSize: 11, fontWeight: 700, letterSpacing: 0.3,
-                                color: accentColor, background: `${accentColor}15`,
-                                padding: '4px 10px', borderRadius: 8,
-                                border: `1px solid ${accentColor}20`,
-                              }}>
-                                {item.categoria}
-                              </span>
-                            )}
-                            {item.duracao && (
-                              <span style={{
-                                fontSize: 11, fontWeight: 600, color: 'var(--text-muted)',
-                                background: 'rgba(255,255,255,0.05)',
-                                padding: '4px 10px', borderRadius: 8,
-                                border: '1px solid rgba(255,255,255,0.06)',
-                              }}>
-                                ⏱ {item.duracao} min
-                              </span>
-                            )}
-                            <span style={{
-                              fontSize: 11, fontWeight: 600, color: 'var(--text-muted)',
-                              background: 'rgba(255,255,255,0.05)',
-                              padding: '4px 10px', borderRadius: 8,
-                              border: '1px solid rgba(255,255,255,0.06)',
-                            }}>
-                              {item.exercicios.length} exercícios
-                            </span>
+                        <div className="anim">
+                          <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
+                            {item.categoria && <span className="tag" style={{ background: 'var(--lime-dim)', color: 'var(--lime)', border: '1px solid var(--lime-border)' }}>{item.categoria}</span>}
+                            {item.duracao && <span className="tag">{item.duracao} min</span>}
+                            <span className="tag">{item.exercicios.length} exs</span>
                           </div>
 
                           {item.exercicios.length > 0 && (
-                            <div style={{
-                              borderRadius: 12, background: 'rgba(0,0,0,0.2)',
-                              border: '1px solid rgba(255,255,255,0.04)',
-                              padding: '8px 0', maxHeight: 200, overflowY: 'auto',
-                            }}>
+                            <div className="ex-list-mini">
                               {item.exercicios.slice(0, 10).map((ex, ei) => {
                                 const exNome = typeof ex === 'string' ? ex : (ex?.nome || ex?.exercicio || `Exercício ${ei + 1}`)
                                 const series = ex?.series || ex?.sets || null
                                 const reps = ex?.repeticoes || ex?.reps || null
                                 return (
-                                  <div key={ei} style={{
-                                    padding: '7px 12px',
-                                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                    borderBottom: ei < Math.min(item.exercicios.length, 10) - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-                                  }}>
-                                    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                                      {exNome}
-                                    </span>
-                                    {(series || reps) && (
-                                      <span style={{ fontSize: 11, color: 'var(--text-dim)', fontWeight: 600 }}>
-                                        {series && `${series}x`}{reps && `${reps}`}
-                                      </span>
-                                    )}
+                                  <div key={ei} className="ex-item-mini">
+                                    <span style={{ color: 'var(--text-2)' }}>{exNome}</span>
+                                    {(series || reps) && <span style={{ color: 'var(--text-3)', fontWeight: 800 }}>{series && `${series}x`}{reps}</span>}
                                   </div>
                                 )
                               })}
-                              {item.exercicios.length > 10 && (
-                                <div style={{ padding: '6px 12px', fontSize: 11, color: 'var(--text-dim)' }}>
-                                  +{item.exercicios.length - 10} mais...
-                                </div>
-                              )}
                             </div>
                           )}
                         </div>
                       ) : (
-                        <div>
-                          <div style={{
-                            display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 6,
-                            marginBottom: item.observacoes ? 10 : 0,
-                          }}>
+                        <div className="anim">
+                          <div className="macro-grid">
                             {[
-                              { label: 'Calorias', value: `${item.kcal}`, unit: 'kcal', color: '#ff5e5e' },
-                              { label: 'Proteína', value: `${item.proteina}`, unit: 'g', color: '#5f9dff' },
-                              { label: 'Carbo', value: `${item.carboidrato}`, unit: 'g', color: '#efb144' },
-                              { label: 'Gordura', value: `${item.gordura}`, unit: 'g', color: '#a78bfa' },
+                              { label: 'KCAL', val: item.kcal, color: 'var(--red)' },
+                              { label: 'PROT', val: item.proteina, color: 'var(--blue)' },
+                              { label: 'CARB', val: item.carboidrato, color: 'var(--amber)' },
+                              { label: 'GORD', val: item.gordura, color: 'var(--purple)' },
                             ].map((m) => (
-                              <div key={m.label} style={{
-                                textAlign: 'center',
-                                borderRadius: 10,
-                                background: 'rgba(0,0,0,0.2)',
-                                border: '1px solid rgba(255,255,255,0.04)',
-                                padding: '8px 4px',
-                              }}>
-                                <div style={{ fontSize: 16, fontFamily: 'var(--font-display)', fontWeight: 800, color: m.color, lineHeight: 1 }}>
-                                  {m.value}
-                                </div>
-                                <div style={{ fontSize: 9, color: 'var(--text-dim)', marginTop: 2, fontWeight: 600 }}>
-                                  {m.label}
-                                </div>
+                              <div key={m.label} className="macro-item">
+                                <div className="macro-val" style={{ color: m.color }}>{m.val}</div>
+                                <div className="macro-lab">{m.label}</div>
                               </div>
                             ))}
                           </div>
 
                           {item.observacoes && (
-                            <div style={{
-                              borderRadius: 10, background: 'rgba(0,0,0,0.15)',
-                              border: '1px solid rgba(255,255,255,0.04)',
-                              padding: '8px 12px',
-                            }}>
-                              <p style={{ fontSize: 11, color: 'var(--text-dim)', marginBottom: 3 }}>Observações</p>
-                              <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.4 }}>
-                                {item.observacoes}
-                              </p>
+                            <div className="input-field" style={{ padding: 12, borderRadius: 12, background: 'var(--bg-3)', opacity: 0.8 }}>
+                              <p style={{ fontSize: 11, color: 'var(--text-3)', marginBottom: 4, fontWeight: 700 }}>OBSERVAÇÕES</p>
+                              <p style={{ fontSize: 12, color: 'var(--text-2)', lineHeight: 1.5 }}>{item.observacoes}</p>
                             </div>
                           )}
                         </div>
@@ -631,20 +406,8 @@ export default function Historico() {
         <button
           type="button"
           onClick={() => setPage(p => p + 1)}
-          style={{
-            width: '100%',
-            borderRadius: 14,
-            padding: '12px',
-            fontSize: 13,
-            fontWeight: 700,
-            color: 'var(--green)',
-            background: 'rgba(201,242,77,0.06)',
-            border: '1px solid rgba(201,242,77,0.15)',
-            cursor: 'pointer',
-            transition: 'all .2s ease',
-            letterSpacing: 0.3,
-            animation: 'floatIn .4s ease-out',
-          }}
+          className="btn anim"
+          style={{ width: '100%', marginTop: 8 }}
         >
           Carregar mais
         </button>

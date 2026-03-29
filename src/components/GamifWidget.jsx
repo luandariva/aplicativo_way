@@ -4,7 +4,7 @@ import { fetchGamificacaoResumo } from '../lib/gamificacao'
 
 const SPRING = 'cubic-bezier(.34,1.56,.64,1)'
 
-function RingProgress({ pct, size = 60, stroke = 5, color = 'var(--green)', children }) {
+function RingProgress({ pct, size = 60, stroke = 5, color = 'var(--lime)', children }) {
   const r = (size - stroke * 2) / 2
   const circ = 2 * Math.PI * r
   const offset = circ - (pct / 100) * circ
@@ -36,14 +36,14 @@ function DesafioBar({ label, atual, meta, cor, completo }) {
   return (
     <div style={{ marginBottom: 8 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 4 }}>
-        <span style={{ color: ok ? 'var(--green)' : 'var(--text-muted)' }}>
+        <span style={{ color: ok ? 'var(--lime)' : 'var(--text-2)' }}>
           {ok ? '✓ ' : ''}{label}
         </span>
-        <span style={{ color: 'var(--text-dim)' }}>{completo ? `${meta}/${meta}` : `${atual}/${meta}`}</span>
+        <span style={{ color: 'var(--text-3)' }}>{completo ? `${meta}/${meta}` : `${atual}/${meta}`}</span>
       </div>
       <div style={{ height: 4, background: 'rgba(255,255,255,0.07)', borderRadius: 999, overflow: 'hidden' }}>
         <div style={{
-          width: `${pct}%`, height: '100%', background: ok ? 'var(--green)' : cor, borderRadius: 999,
+          width: `${pct}%`, height: '100%', background: ok ? 'var(--lime)' : cor, borderRadius: 999,
           transition: `width .55s ${SPRING}`,
         }} />
       </div>
@@ -83,12 +83,12 @@ export default function GamifWidget({ onVerConquistas }) {
     return (
       <div style={{
         borderRadius: 16, border: '1px solid var(--border)',
-        background: 'var(--bg-card)', padding: 14, minHeight: 80,
+        background: 'var(--bg-3)', padding: 14, minHeight: 80,
         display: 'flex', alignItems: 'center',
       }}>
         <div style={{
           width: 16, height: 16, border: '2px solid var(--border)',
-          borderTopColor: 'var(--green)', borderRadius: '50%',
+          borderTopColor: 'var(--lime)', borderRadius: '50%',
           animation: 'spin .7s linear infinite',
         }} />
       </div>
@@ -106,48 +106,43 @@ export default function GamifWidget({ onVerConquistas }) {
   const desafioOk = prog?.completo
 
   return (
-    <div style={{
-      borderRadius: 16, border: '1px solid var(--border)',
-      background: 'linear-gradient(145deg, #13161b, #0a0c0f)',
-      padding: 14, animation: 'floatIn .4s ease .08s both',
+    <div className="resumo-card anim" style={{ 
+      background: 'linear-gradient(145deg, var(--bg-3), var(--bg-4))',
+      padding: 16, border: '1px solid var(--border-2)'
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-        <p style={{ fontSize: 12, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-          Pontos da semana
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <p style={{ fontSize: 11, color: 'var(--text-3)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>
+          Progresso da Semana
         </p>
         <button
           type="button"
           onClick={onVerConquistas}
-          style={{
-            fontSize: 11, color: 'var(--green)', fontWeight: 700, background: 'none',
-            border: '1px solid rgba(201,242,77,0.3)', borderRadius: 8, padding: '4px 10px',
-          }}
+          className="tag"
+          style={{ background: 'var(--lime-dim)', color: 'var(--lime)', border: '1px solid var(--lime-border)', fontWeight: 800, cursor: 'pointer' }}
         >
-          Perfil →
+          DETALHES →
         </button>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 }}>
-        <RingProgress pct={pctSemana} size={64} stroke={5}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+        <RingProgress pct={pctSemana} size={68} stroke={6} color="var(--lime)">
           <div style={{ textAlign: 'center' }}>
-            <p style={{ fontSize: 16, fontWeight: 800, color: 'var(--green)', lineHeight: 1 }}>{pontos}</p>
-            <p style={{ fontSize: 9, color: 'var(--text-dim)' }}>pts</p>
+            <p style={{ fontSize: 18, fontWeight: 900, color: 'var(--lime)', lineHeight: 1, fontFamily: 'var(--font-display)' }}>{pontos}</p>
+            <p style={{ fontSize: 9, color: 'var(--text-3)', fontWeight: 700, textTransform: 'uppercase' }}>pts</p>
           </div>
         </RingProgress>
 
         <div style={{ flex: 1 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: '8px 10px' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-dim)' }}>Atividade</p>
-              <p style={{ fontSize: 18, fontWeight: 800, fontFamily: 'var(--font-display)', color: 'var(--green)' }}>
-                {data.pontos_actividade ?? 0}
-              </p>
+            <div className="point-card">
+              <span className="point-val" style={{ fontSize: 18, color: 'var(--text-2)' }}>{data.pontos_actividade ?? 0}</span>
+              <span className="point-lab">ATIVIDADE</span>
             </div>
-            <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: '8px 10px' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-dim)' }}>Bônus desafio</p>
-              <p style={{ fontSize: 18, fontWeight: 800, fontFamily: 'var(--font-display)', color: bonus > 0 ? '#efb144' : 'var(--text-dim)' }}>
-                {bonus > 0 ? `+${bonus}` : '—'}
-              </p>
+            <div className="point-card">
+              <span className="point-val" style={{ fontSize: 18, color: bonus > 0 ? 'var(--amber)' : 'var(--text-3)' }}>
+                {bonus > 0 ? `+${bonus}` : '0'}
+              </span>
+              <span className="point-lab">BÔNUS</span>
             </div>
           </div>
         </div>
@@ -155,45 +150,38 @@ export default function GamifWidget({ onVerConquistas }) {
 
       {desafio && prog && (
         <div style={{
-          background: desafioOk ? 'rgba(201,242,77,0.07)' : 'rgba(255,255,255,0.03)',
-          borderRadius: 12, padding: '10px 12px',
-          border: `1px solid ${desafioOk ? 'rgba(201,242,77,0.3)' : 'var(--border)'}`,
+          background: desafioOk ? 'var(--lime-dim)' : 'var(--bg-4)',
+          borderRadius: 14, padding: '12px',
+          border: `1px solid ${desafioOk ? 'var(--lime-border)' : 'var(--border)'}`,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <p style={{ fontSize: 12, fontWeight: 700, color: desafioOk ? 'var(--green)' : 'var(--text-muted)' }}>
-              {desafioOk ? '🏆 Desafio concluído!' : desafio.titulo}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <p style={{ fontSize: 12, fontWeight: 800, color: desafioOk ? 'var(--lime)' : 'var(--text-2)' }}>
+              {desafioOk ? '🏆 DESAFIO CONCLUÍDO!' : (desafio.titulo?.toUpperCase() || 'DESAFIO SEMANAL')}
             </p>
             {!desafioOk && (
-              <span style={{
-                fontSize: 10, background: 'rgba(239,177,68,0.15)', color: '#efb144',
-                borderRadius: 6, padding: '3px 8px', fontWeight: 700,
-              }}>
-                +{desafio.bonus_pontos} pts
+              <span className="tag" style={{ background: 'rgba(239,177,68,0.1)', color: 'var(--amber)', border: '1px solid rgba(239,177,68,0.2)' }}>
+                +{desafio.bonus_pontos} PTS
               </span>
             )}
           </div>
           <DesafioBar label="Dias ativos" atual={prog.dias_atividade} meta={desafio.min_dias_atividade} cor="var(--blue)" completo={desafioOk} />
           <DesafioBar label="Treinos" atual={prog.treinos_semana} meta={desafio.min_treinos} cor="var(--amber)" completo={desafioOk} />
-          <DesafioBar label="Macros no alvo" atual={prog.dias_macros} meta={desafio.min_dias_macros} cor="#a78bfa" completo={desafioOk} />
+          <DesafioBar label="Macros" atual={prog.dias_macros} meta={desafio.min_dias_macros} cor="var(--purple)" completo={desafioOk} />
         </div>
       )}
 
       <div style={{
-        marginTop: 10, display: 'flex', alignItems: 'center', gap: 8,
-        background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: '8px 10px',
+        marginTop: 12, display: 'flex', alignItems: 'center', gap: 10,
+        padding: '10px 12px', background: 'rgba(0,0,0,0.2)', borderRadius: 12, border: '1px solid var(--border)'
       }}>
-        <span style={{ fontSize: 18 }}>{data.ranking_opt_in ? '🏅' : '👻'}</span>
+        <span style={{ fontSize: 20 }}>{data.ranking_opt_in ? '🏅' : '👻'}</span>
         {data.ranking_opt_in && data.posicao_ranking > 0 ? (
-          <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-            Ranking da semana:{' '}
-            <span style={{ color: 'var(--green)', fontWeight: 800 }}>#{data.posicao_ranking}</span>
-            {data.participantes_ranking > 1 && (
-              <span style={{ color: 'var(--text-dim)' }}> de {data.participantes_ranking}</span>
-            )}
+          <p style={{ fontSize: 12, color: 'var(--text-2)', fontWeight: 500 }}>
+            Você está em <span style={{ color: 'var(--lime)', fontWeight: 800 }}>#{data.posicao_ranking}</span> no ranking
           </p>
         ) : (
-          <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-            Ranking privado — ative em <span style={{ color: 'var(--green)', fontWeight: 700 }}>Perfil</span> (aba Config.).
+          <p style={{ fontSize: 11, color: 'var(--text-3)', lineHeight: 1.3 }}>
+            Seu ranking está <strong>privado</strong>. Ative no perfil para competir.
           </p>
         )}
       </div>

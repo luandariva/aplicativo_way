@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase'
 import { resolveUsuarioDb } from '../lib/usuarioDb'
 import WeekCalendar from '../components/WeekCalendar'
 import StreakWidget from '../components/StreakWidget'
+import './Dashboard.css'
 
 function toNum(value) {
   const n = Number(value)
@@ -35,7 +36,7 @@ export default function Dashboard() {
     async function carregarResumoRapido() {
       if (!user?.id) {
         if (alive) {
-          setErro('Usuario nao autenticado.')
+          setErro('Usuario não autenticado.')
           setLoading(false)
         }
         return
@@ -46,7 +47,7 @@ export default function Dashboard() {
 
       try {
         const { usuarioId } = await resolveUsuarioDb(user)
-        if (!usuarioId) throw new Error('Usuario nao encontrado.')
+        if (!usuarioId) throw new Error('Usuario não encontrado.')
 
         const { inicio, fim } = inicioEFimDoDia(selectedDate)
         const hojeIso = inicio.toISOString().slice(0, 10)
@@ -114,17 +115,9 @@ export default function Dashboard() {
   const exerciciosTreinoHoje = Array.isArray(treinoHoje?.exercicios) ? treinoHoje.exercicios.length : 0
 
   return (
-    <div style={{
-      minHeight: '100dvh',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 14,
-      padding: '16px',
-      paddingTop: 'calc(var(--safe-top) + 12px)',
-      paddingBottom: 'calc(86px + var(--safe-bottom))',
-    }}>
-      <div>
-        <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Ola, {nomeSaudacao}</p>
+    <div className="dashboard-container">
+      <div className="anim">
+        <p style={{ fontSize: 12, color: 'var(--text-3)' }}>Olá, {nomeSaudacao}</p>
       </div>
 
       <StreakWidget />
@@ -132,27 +125,13 @@ export default function Dashboard() {
       <WeekCalendar selectedDate={selectedDate} onSelectDate={setSelectedDate} />
 
       {loading && (
-        <div style={{
-          borderRadius: 12,
-          border: '1px solid var(--border)',
-          background: 'var(--bg-card)',
-          color: 'var(--text-muted)',
-          padding: 14,
-          fontSize: 13,
-        }}>
+        <div className="dash-loading anim">
           Carregando dados de treino e refeicoes...
         </div>
       )}
 
       {!loading && erro && (
-        <div style={{
-          borderRadius: 12,
-          border: '1px solid var(--border)',
-          background: 'var(--bg-card)',
-          color: '#ff7676',
-          padding: 14,
-          fontSize: 13,
-        }}>
+        <div className="dash-warning anim">
           {erro}
         </div>
       )}
@@ -168,247 +147,99 @@ export default function Dashboard() {
         const protOffset = circumference * (1 - protPct)
 
         const treinoStatus = treinoFoiConcluidoHoje
-          ? { label: 'Concluído', color: '#34d399', bg: 'rgba(52,211,153,0.12)' }
+          ? { label: 'Concluído', color: 'var(--lime)', bg: 'rgba(75,240,122,0.12)' }
           : treinoHoje
-            ? { label: 'Pendente', color: '#efb144', bg: 'rgba(239,177,68,0.12)' }
-            : { label: 'Descanso', color: '#8a8f97', bg: 'rgba(138,143,151,0.1)' }
+            ? { label: 'Pendente', color: 'var(--amber)', bg: 'rgba(240,168,75,0.12)' }
+            : { label: 'Descanso', color: 'var(--text-3)', bg: 'var(--bg-3)' }
 
         return (
-          <div style={{
-            borderRadius: 28,
-            background: 'linear-gradient(145deg, rgba(15,16,18,0.95), rgba(23,25,29,0.85))',
-            padding: 24,
-            boxShadow: '0 12px 48px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.06)',
-            backdropFilter: 'blur(20px)',
-            animation: 'floatIn .5s ease-out',
-            position: 'relative',
-            overflow: 'hidden',
-          }}>
-            {/* Decorative glow blob */}
-            <div style={{
-              position: 'absolute', top: -40, right: -40,
-              width: 120, height: 120,
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(201,242,77,0.08) 0%, transparent 70%)',
-              pointerEvents: 'none',
-            }} />
+          <div className="resumo-card anim-2">
+            <div className="resumo-card-glow" />
 
-            {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{
-                  width: 4, height: 22, borderRadius: 4,
-                  background: 'linear-gradient(to bottom, var(--green), var(--green-dim))',
-                }} />
-                <h2 style={{ fontSize: 20, fontFamily: 'var(--font-display)', fontWeight: 800, margin: 0, color: '#fff', letterSpacing: -0.3 }}>
-                  Resumo Diário
-                </h2>
+            <div className="resumo-header">
+              <div className="resumo-title-wrapper">
+                <div className="resumo-title-bar" />
+                <h2 className="resumo-title">Resumo Diário</h2>
               </div>
-              <span style={{
-                background: 'rgba(201,242,77,0.1)',
-                color: 'var(--green)',
-                padding: '5px 14px',
-                borderRadius: 20,
-                fontSize: 11,
-                fontWeight: 700,
-                letterSpacing: 0.8,
-                textTransform: 'uppercase',
-                border: '1px solid rgba(201,242,77,0.15)',
-              }}>Hoje</span>
+              <span className="resumo-badge">Hoje</span>
             </div>
 
-            {/* ── Anel de Calorias + Proteínas ── */}
-            <div style={{
-              display: 'flex', gap: 16, marginBottom: 16,
-            }}>
-              {/* Calorias ring */}
-              <div
-                onClick={() => navigate('/nutricao')}
-                style={{
-                  flex: 1,
-                  background: 'rgba(255,255,255,0.025)',
-                  borderRadius: 22,
-                  padding: '20px 16px',
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
-                  border: '1px solid rgba(255,255,255,0.04)',
-                  cursor: 'pointer',
-                  transition: 'transform .18s ease, box-shadow .18s ease',
-                  animation: 'floatIn .5s ease-out .05s both',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 0 20px rgba(255,145,77,0.12)' }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none' }}
-              >
+            <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
+              <div className="ring-card kcal" onClick={() => navigate('/nutricao')}>
                 <div style={{ position: 'relative', width: 68, height: 68 }}>
                   <svg width="68" height="68" viewBox="0 0 68 68" style={{ transform: 'rotate(-90deg)' }}>
                     <circle cx="34" cy="34" r="28" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="5" />
-                    <circle cx="34" cy="34" r="28" fill="none"
-                      stroke="url(#kcalGrad)" strokeWidth="5"
-                      strokeLinecap="round"
-                      strokeDasharray={circumference}
-                      strokeDashoffset={kcalOffset}
-                      style={{ transition: 'stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1)' }}
-                    />
+                    <circle cx="34" cy="34" r="28" fill="none" stroke="url(#kcalGrad)" strokeWidth="5" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={kcalOffset} style={{ transition: 'stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1)' }} />
                     <defs>
                       <linearGradient id="kcalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#ff914d" />
-                        <stop offset="100%" stopColor="#ff5e5e" />
+                        <stop offset="0%" stopColor="var(--amber)" />
+                        <stop offset="100%" stopColor="var(--red)" />
                       </linearGradient>
                     </defs>
                   </svg>
-                  <div style={{
-                    position: 'absolute', inset: 0,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff914d" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
                     </svg>
                   </div>
                 </div>
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ color: '#fff', fontSize: 22, fontFamily: 'var(--font-display)', fontWeight: 800, lineHeight: 1 }}>
-                    {resumoRefeicoes.kcal}
-                  </div>
-                  <div style={{ color: 'var(--text-dim)', fontSize: 11, fontWeight: 500, marginTop: 2 }}>
-                    / {KCAL_META} kcal
-                  </div>
+                  <div style={{ color: '#fff', fontSize: 22, fontFamily: 'var(--font-display)', fontWeight: 800, lineHeight: 1 }}>{resumoRefeicoes.kcal}</div>
+                  <div style={{ color: 'var(--text-3)', fontSize: 11, fontWeight: 500, marginTop: 2 }}>/ {KCAL_META} kcal</div>
                 </div>
-                <span style={{ color: '#ff914d', fontSize: 12, fontWeight: 700, letterSpacing: 0.3 }}>Calorias</span>
+                <span style={{ color: 'var(--amber)', fontSize: 12, fontWeight: 700, letterSpacing: 0.3 }}>Calorias</span>
               </div>
 
-              {/* Proteínas ring */}
-              <div
-                onClick={() => navigate('/nutricao')}
-                style={{
-                  flex: 1,
-                  background: 'rgba(255,255,255,0.025)',
-                  borderRadius: 22,
-                  padding: '20px 16px',
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
-                  border: '1px solid rgba(255,255,255,0.04)',
-                  cursor: 'pointer',
-                  transition: 'transform .18s ease, box-shadow .18s ease',
-                  animation: 'floatIn .5s ease-out .1s both',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 0 20px rgba(95,157,255,0.12)' }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none' }}
-              >
+              <div className="ring-card prot" onClick={() => navigate('/nutricao')}>
                 <div style={{ position: 'relative', width: 68, height: 68 }}>
                   <svg width="68" height="68" viewBox="0 0 68 68" style={{ transform: 'rotate(-90deg)' }}>
                     <circle cx="34" cy="34" r="28" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="5" />
-                    <circle cx="34" cy="34" r="28" fill="none"
-                      stroke="url(#protGrad)" strokeWidth="5"
-                      strokeLinecap="round"
-                      strokeDasharray={circumference}
-                      strokeDashoffset={protOffset}
-                      style={{ transition: 'stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1)' }}
-                    />
+                    <circle cx="34" cy="34" r="28" fill="none" stroke="url(#protGrad)" strokeWidth="5" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={protOffset} style={{ transition: 'stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1)' }} />
                     <defs>
                       <linearGradient id="protGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#5f9dff" />
+                        <stop offset="0%" stopColor="var(--blue)" />
                         <stop offset="100%" stopColor="#a78bfa" />
                       </linearGradient>
                     </defs>
                   </svg>
-                  <div style={{
-                    position: 'absolute', inset: 0,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5f9dff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                       <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
                     </svg>
                   </div>
                 </div>
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ color: '#fff', fontSize: 22, fontFamily: 'var(--font-display)', fontWeight: 800, lineHeight: 1 }}>
-                    {resumoRefeicoes.proteinas}g
-                  </div>
-                  <div style={{ color: 'var(--text-dim)', fontSize: 11, fontWeight: 500, marginTop: 2 }}>
-                    / {PROT_META}g meta
-                  </div>
+                  <div style={{ color: '#fff', fontSize: 22, fontFamily: 'var(--font-display)', fontWeight: 800, lineHeight: 1 }}>{resumoRefeicoes.proteinas}g</div>
+                  <div style={{ color: 'var(--text-3)', fontSize: 11, fontWeight: 500, marginTop: 2 }}>/ {PROT_META}g meta</div>
                 </div>
-                <span style={{ color: '#5f9dff', fontSize: 12, fontWeight: 700, letterSpacing: 0.3 }}>Proteínas</span>
+                <span style={{ color: 'var(--blue)', fontSize: 12, fontWeight: 700, letterSpacing: 0.3 }}>Proteínas</span>
               </div>
             </div>
 
-            {/* ── Treino + Refeições row ── */}
             <div style={{ display: 'flex', gap: 12 }}>
-              {/* Treino card */}
-              <div
-                onClick={() => navigate('/treino')}
-                style={{
-                  flex: 1,
-                  background: 'rgba(255,255,255,0.025)',
-                  borderRadius: 18,
-                  padding: '16px 14px',
-                  display: 'flex', alignItems: 'center', gap: 12,
-                  border: '1px solid rgba(255,255,255,0.04)',
-                  cursor: 'pointer',
-                  transition: 'transform .18s ease, box-shadow .18s ease',
-                  animation: 'floatIn .5s ease-out .15s both',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 0 16px rgba(52,211,153,0.1)' }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none' }}
-              >
-                <div style={{
-                  width: 42, height: 42, borderRadius: 14,
-                  background: 'linear-gradient(135deg, rgba(52,211,153,0.15), rgba(52,211,153,0.05))',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  flexShrink: 0,
-                }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <div className="action-card cardio" onClick={() => navigate('/treino')}>
+                <div className="action-icon cardio-bg">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--lime)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="m14.4 14.4 5.6 5.6" /><path d="M22 14.8v3.4c0 .8-.5 1.5-1.2 1.7l-1.3.4c-.6.2-1.3-.2-1.5-.8L18 19" /><path d="M10.8 19.2l-5.6-5.6" /><path d="M2.8 5.6 2 4.2c-.2-.6.2-1.3.8-1.5l1.3-.4c.8-.2 1.5.3 1.7 1.1L6 4.6" /><path d="m13.8 13.8 2-2" /><path d="m10.2 10.2-2 2" /><path d="m6.6 6.6-2 2" /><path d="m17.4 17.4-2 2" /><path d="M13 13 5 5" /><path d="m19 19-8-8" /><path d="M7.4 7.4 6 6c-.8-.8-.8-2 0-2.8s2-.8 2.8 0l1.4 1.4" /><path d="m16.6 16.6 1.4 1.4c.8.8.8 2 0 2.8s-2 .8-2.8 0l-1.4-1.4" />
                   </svg>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
                   <span style={{ color: '#fff', fontSize: 13, fontWeight: 700 }}>Treino</span>
-                  <span style={{
-                    display: 'inline-block',
-                    fontSize: 11, fontWeight: 700,
-                    color: treinoStatus.color,
-                    background: treinoStatus.bg,
-                    padding: '2px 8px',
-                    borderRadius: 8,
-                    width: 'fit-content',
-                    letterSpacing: 0.3,
-                  }}>{treinoStatus.label}</span>
+                  <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 700, color: treinoStatus.color, background: treinoStatus.bg, padding: '2px 8px', borderRadius: 8, width: 'fit-content', letterSpacing: 0.3 }}>{treinoStatus.label}</span>
                 </div>
               </div>
 
-              {/* Refeições card */}
-              <div
-                onClick={() => navigate('/nutricao')}
-                style={{
-                  flex: 1,
-                  background: 'rgba(255,255,255,0.025)',
-                  borderRadius: 18,
-                  padding: '16px 14px',
-                  display: 'flex', alignItems: 'center', gap: 12,
-                  border: '1px solid rgba(255,255,255,0.04)',
-                  cursor: 'pointer',
-                  transition: 'transform .18s ease, box-shadow .18s ease',
-                  animation: 'floatIn .5s ease-out .2s both',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 0 16px rgba(201,242,77,0.1)' }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none' }}
-              >
-                <div style={{
-                  width: 42, height: 42, borderRadius: 14,
-                  background: 'linear-gradient(135deg, rgba(201,242,77,0.15), rgba(201,242,77,0.05))',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  flexShrink: 0,
-                }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <div className="action-card meals" onClick={() => navigate('/nutricao')}>
+                <div className="action-icon meals-bg">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--lime)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M18 8h1a4 4 0 0 1 0 8h-1" /><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" /><line x1="6" y1="1" x2="6" y2="4" /><line x1="10" y1="1" x2="10" y2="4" /><line x1="14" y1="1" x2="14" y2="4" />
                   </svg>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <span style={{ color: '#fff', fontSize: 13, fontWeight: 700 }}>Refeições</span>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                    <span style={{ color: 'var(--green)', fontSize: 20, fontFamily: 'var(--font-display)', fontWeight: 800, lineHeight: 1 }}>
-                      {resumoRefeicoes.total}
-                    </span>
-                    <span style={{ color: 'var(--text-dim)', fontSize: 11, fontWeight: 500 }}>registradas</span>
+                    <span style={{ color: 'var(--lime)', fontSize: 20, fontFamily: 'var(--font-display)', fontWeight: 800, lineHeight: 1 }}>{resumoRefeicoes.total}</span>
+                    <span style={{ color: 'var(--text-3)', fontSize: 11, fontWeight: 500 }}>registradas</span>
                   </div>
                 </div>
               </div>
@@ -416,6 +247,74 @@ export default function Dashboard() {
           </div>
         )
       })()}
+
+      {/* ─── Desafio da Semana ─── */}
+      <div className="desafio-card anim-3">
+        <div className="desafio-top-bar" />
+        <div className="desafio-bg-glow1" />
+        <div className="desafio-bg-glow2" />
+
+        <div className="desafio-body">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ width: 4, height: 22, borderRadius: 4, background: 'linear-gradient(to bottom, #f97316, #ef4444)' }} />
+              <h2 style={{ fontSize: 20, fontFamily: 'var(--font-display)', fontWeight: 800, margin: 0, color: '#fff', letterSpacing: -0.3 }}>
+                Desafio da Semana
+              </h2>
+            </div>
+            <span className="desafio-badge">🔥 Ativo</span>
+          </div>
+
+          <div style={{ display: 'flex', gap: 18, alignItems: 'center' }}>
+            <div className="desafio-icon">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="17" cy="4" r="2" />
+                <path d="M15.5 7.5 12 10l-3 2.5" />
+                <path d="m7 16 3-3 2.5 1.5L16 11" />
+                <path d="M3 20h2l3.5-7" />
+                <path d="M18 13l3 7h-3" />
+              </svg>
+            </div>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <span style={{ color: '#fff', fontSize: 17, fontWeight: 800, fontFamily: 'var(--font-display)', lineHeight: 1.2 }}>
+                🏃 Corrida de Rua
+              </span>
+              <p style={{ color: 'var(--text-2)', fontSize: 12, lineHeight: 1.5, margin: 0, fontWeight: 500 }}>
+                Complete uma corrida ao ar livre esta semana e registre!
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2 }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span style={{ color: '#8b5cf6', fontSize: 11, fontWeight: 700, letterSpacing: 0.3 }}>Até Domingo, 29 Mar</span>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: 10, marginTop: 18 }}>
+            <div className="desafio-stat">
+              <span style={{ fontSize: 20, lineHeight: 1 }}>🎯</span>
+              <span className="stat-value">5 km</span>
+              <span className="stat-label">Meta mínima</span>
+            </div>
+            <div className="desafio-stat">
+              <span style={{ fontSize: 20, lineHeight: 1 }}>⭐</span>
+              <span className="stat-value">+50 XP</span>
+              <span className="stat-label">Recompensa</span>
+            </div>
+            <div className="desafio-stat">
+              <span style={{ fontSize: 20, lineHeight: 1 }}>👥</span>
+              <span className="stat-value">12</span>
+              <span className="stat-label">Participando</span>
+            </div>
+          </div>
+
+          <button className="desafio-btn" onClick={() => navigate('/treino')}>
+            Aceitar Desafio 💪
+          </button>
+        </div>
+      </div>
     </div>
   )
 }

@@ -48,27 +48,28 @@ export function BadgeToast({ badge, onClose, top = 'calc(var(--safe-top) + 16px)
     <div style={{
       top,
       ...toastMotion(phase),
-      background: 'linear-gradient(135deg, #1a1d22, #0f1215)',
-      border: '1px solid rgba(201,242,77,0.5)',
-      borderRadius: 16, padding: '10px 16px',
-      display: 'flex', alignItems: 'center', gap: 10,
-      boxShadow: '0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,242,77,0.15)',
+      background: 'rgba(23,25,29,0.95)',
+      backdropFilter: 'blur(20px)',
+      border: '1px solid var(--lime-border)',
+      borderRadius: 20, padding: '12px 16px',
+      display: 'flex', alignItems: 'center', gap: 14,
+      boxShadow: '0 12px 48px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05)',
     }}>
       <div style={{
-        width: 40, height: 40, borderRadius: '50%',
-        background: 'rgba(201,242,77,0.15)',
-        border: '1px solid rgba(201,242,77,0.4)',
+        width: 44, height: 44, borderRadius: '50%',
+        background: 'var(--lime)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 20, flexShrink: 0,
-        animation: 'checkPop .4s ease',
+        fontSize: 24, flexShrink: 0,
+        boxShadow: '0 0 20px var(--lime-dim)',
+        animation: 'checkPop .5s cubic-bezier(0.16, 1, 0.3, 1)',
       }}>
         {badge?.icone || '🏆'}
       </div>
-      <div>
-        <p style={{ fontSize: 11, color: 'rgba(201,242,77,0.7)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-          Conquista desbloqueada!
+      <div style={{ flex: 1 }}>
+        <p style={{ fontSize: 10, color: 'var(--lime)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 2 }}>
+          Conquista!
         </p>
-        <p style={{ fontSize: 14, fontWeight: 700, color: '#f6f7f8', marginTop: 1 }}>
+        <p style={{ fontSize: 15, fontWeight: 900, color: '#fff', fontFamily: 'var(--font-display)', lineHeight: 1.2 }}>
           {badge?.titulo || 'Nova conquista'}
         </p>
       </div>
@@ -102,21 +103,23 @@ export function PontosToast({ texto, onClose, top = 'calc(var(--safe-top) + 16px
       top,
       ...toastMotion(phase),
       zIndex: 9998,
-      background: 'linear-gradient(135deg, #1a1d22, #0f1215)',
-      border: '1px solid rgba(201,242,77,0.4)',
-      borderRadius: 16, padding: '10px 16px',
-      display: 'flex', alignItems: 'center', gap: 10,
-      boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+      background: 'rgba(23,25,29,0.95)',
+      backdropFilter: 'blur(16px)',
+      border: '1px solid var(--border-2)',
+      borderRadius: 18, padding: '12px 18px',
+      display: 'flex', alignItems: 'center', gap: 12,
+      boxShadow: '0 10px 40px rgba(0,0,0,0.6)',
     }}>
       <div style={{
-        width: 36, height: 36, borderRadius: '50%',
-        background: 'rgba(201,242,77,0.15)',
+        width: 32, height: 32, borderRadius: 10,
+        background: 'var(--lime-dim)',
+        border: '1px solid var(--lime-border)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         fontSize: 18, flexShrink: 0,
       }}>
         ⚡
       </div>
-      <p style={{ fontSize: 13, fontWeight: 700, color: '#f6f7f8' }}>{texto}</p>
+      <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', letterSpacing: -0.2 }}>{texto}</p>
     </div>
   )
 }

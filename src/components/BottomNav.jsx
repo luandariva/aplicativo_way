@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const tabs = [
-  { path: '/', label: 'Inicio', icon: (
+  { path: '/', label: 'Início', icon: (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
       <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
@@ -36,8 +36,9 @@ export default function BottomNav() {
   return (
     <nav style={{
       position: 'fixed', bottom: 0, left: 0, right: 0,
-      background: 'rgba(10,11,13,0.98)',
-      borderTop: '1px solid var(--border)',
+      background: 'rgba(11, 12, 14, 0.98)',
+      backdropFilter: 'blur(10px)',
+      borderTop: '1px solid var(--border-2)',
       display: 'flex',
       alignItems: 'flex-end',
       padding: '8px 10px calc(8px + var(--safe-bottom))',
@@ -51,34 +52,29 @@ export default function BottomNav() {
           <button key={tab.path} onClick={() => navigate(tab.path)} style={{
             flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
             gap: 4, padding: isCenter ? '0' : '6px 0 4px',
-            background: 'none', color: active ? 'var(--green-light)' : 'var(--text-dim)',
+            background: 'none', color: active ? 'var(--lime)' : 'var(--text-3)',
             transition: 'all .2s',
             position: 'relative',
           }}>
             {isCenter ? (
               <>
                 <div style={{
-                  width: 54,
-                  height: 54,
-                  borderRadius: '50%',
-                  marginTop: -24,
-                  background: active ? 'var(--green-light)' : 'var(--green)',
-                  color: '#0a0a0a',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: 'var(--shadow-glow)',
-                  transform: active ? 'scale(1.03)' : 'scale(1)',
+                  width: 54, height: 54, borderRadius: '50%', marginTop: -24,
+                  background: active ? '#dbff70' : 'var(--lime)',
+                  color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: active ? '0 0 0 3px rgba(201,242,77,0.3)' : 'none',
+                  transform: active ? 'scale(1.05)' : 'scale(1)',
+                  transition: 'transform 0.2s, box-shadow 0.2s',
                 }}>
                   {tab.icon}
                 </div>
-                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.02em', color: 'var(--text-muted)', marginTop: 2 }}>
+                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.02em', color: 'var(--text-2)', marginTop: 2 }}>
                   {tab.label}
                 </span>
               </>
             ) : (
               <>
-                <div style={{ transform: active ? 'translateY(-1px)' : 'none', transition: 'transform .2s' }}>
+                <div style={{ transform: active ? 'translateY(-2px)' : 'none', transition: 'transform .2s' }}>
                   {tab.icon}
                 </div>
                 <span style={{ fontSize: 10, fontWeight: active ? 700 : 500, letterSpacing: '0.03em' }}>
@@ -89,7 +85,7 @@ export default function BottomNav() {
             {active && !isCenter && (
               <div style={{
                 position: 'absolute', top: -8, width: 28, height: 3,
-                background: 'var(--green)', borderRadius: 999,
+                background: 'var(--lime)', borderRadius: 999,
               }}/>
             )}
           </button>

@@ -9,12 +9,10 @@ const DAY_NAMES = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S']
 export default function WeekCalendar({ selectedDate, onSelectDate }) {
   const containerRef = useRef(null)
 
-  // Geração da lista de dias (15 dias para o passado e 15 para o futuro a partir de hoje)
   const days = useMemo(() => {
     const list = []
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    
     for (let i = -15; i <= 15; i++) {
       const d = new Date(today)
       d.setDate(today.getDate() + i)
@@ -23,7 +21,6 @@ export default function WeekCalendar({ selectedDate, onSelectDate }) {
     return list
   }, [])
 
-  // Header no formato "Julho 2022"
   const headerText = useMemo(() => {
     if (!selectedDate) return ''
     const m = MONTH_NAMES[selectedDate.getMonth()]
@@ -31,7 +28,6 @@ export default function WeekCalendar({ selectedDate, onSelectDate }) {
     return `${m} ${y}`
   }, [selectedDate])
 
-  // Centraliza o dia selecionado quando o componente inicia ou a data muda
   useEffect(() => {
     if (!containerRef.current || !selectedDate) return
     const activeEl = containerRef.current.querySelector('.cal-item-active')
@@ -44,39 +40,21 @@ export default function WeekCalendar({ selectedDate, onSelectDate }) {
 
   function isSameDay(d1, d2) {
     if (!d1 || !d2) return false
-    return d1.getFullYear() === d2.getFullYear() &&
-           d1.getMonth() === d2.getMonth() &&
-           d1.getDate() === d2.getDate()
+    return d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate()
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <h2 style={{ 
-        fontFamily: 'var(--font-display)', 
-        fontSize: 16, 
-        fontWeight: 600, 
-        color: '#fff',
-        margin: 0,
-        marginLeft: 2
-      }}>
+    <div className="anim" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: '#fff', margin: 0, marginLeft: 2 }}>
         {headerText}
       </h2>
 
       <div 
         ref={containerRef}
-        style={{
-          display: 'flex',
-          gap: 12,
-          overflowX: 'auto',
-          paddingBottom: 14, // espaço pro ponto ativo embaixo
-          msOverflowStyle: 'none',
-          scrollbarWidth: 'none',
-        }}
+        style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 14, msOverflowStyle: 'none', scrollbarWidth: 'none' }}
         className="hide-scroll-cal"
       >
-        <style dangerouslySetInnerHTML={{__html: `
-          .hide-scroll-cal::-webkit-scrollbar { display: none; }
-        `}} />
+        <style dangerouslySetInnerHTML={{__html: `.hide-scroll-cal::-webkit-scrollbar { display: none; }`}} />
 
         {days.map((d) => {
           const active = isSameDay(d, selectedDate)
@@ -86,23 +64,15 @@ export default function WeekCalendar({ selectedDate, onSelectDate }) {
               className={`cal-item ${active ? 'cal-item-active' : ''}`}
               onClick={() => onSelectDate(d)}
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minWidth: 50,
-                height: 66,
-                borderRadius: 14,
-                background: active ? 'var(--green)' : 'var(--bg-card)',
-                color: active ? '#111' : 'var(--text-muted)',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                position: 'relative',
-                flexShrink: 0,
-                border: active ? 'none' : '1px solid var(--border)',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                minWidth: 50, height: 66, borderRadius: 'var(--radius)',
+                background: active ? 'var(--lime)' : 'var(--bg-3)',
+                color: active ? '#000' : 'var(--text-2)',
+                cursor: 'pointer', transition: 'all 0.2s', position: 'relative', flexShrink: 0,
+                border: active ? 'none' : '1px solid var(--border-2)',
               }}
             >
-              <span style={{ fontSize: 11, fontWeight: 500, marginBottom: 4, color: active ? '#333' : 'var(--text-dim)' }}>
+              <span style={{ fontSize: 11, fontWeight: 500, marginBottom: 4, color: active ? '#333' : 'var(--text-3)' }}>
                 {DAY_NAMES[d.getDay()]}
               </span>
               <span style={{ fontSize: 18, fontFamily: 'var(--font-display)', fontWeight: 800 }}>
@@ -110,14 +80,7 @@ export default function WeekCalendar({ selectedDate, onSelectDate }) {
               </span>
 
               {active && (
-                <div style={{
-                  position: 'absolute',
-                  bottom: -10,
-                  width: 5,
-                  height: 5,
-                  borderRadius: '50%',
-                  background: 'var(--green)'
-                }} />
+                <div style={{ position: 'absolute', bottom: -10, width: 5, height: 5, borderRadius: '50%', background: 'var(--lime)' }} />
               )}
             </div>
           )

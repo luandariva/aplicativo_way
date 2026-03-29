@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { fetchGamificacaoResumo, fetchUsuarioBadges } from '../lib/gamificacao'
 import { BadgeToast, PontosToast } from '../components/GamifToasts'
 import { resolveUsuarioDb } from '../lib/usuarioDb'
+import './Treino.css'
 
 const CATEGORIAS = [
   { id: 'all', label: 'Todos os treinos' },
@@ -151,9 +152,9 @@ function ExercicioVideoDemo({ url }) {
         marginBottom: 12,
         padding: '12px 14px',
         borderRadius: 12,
-        background: 'var(--bg-input)',
+        background: 'var(--bg-4)',
         border: '1px solid var(--border)',
-        color: 'var(--green)',
+        color: 'var(--lime)',
         fontWeight: 700,
         fontSize: 13,
         textAlign: 'center',
@@ -393,11 +394,11 @@ function novoExercicioBuilder() {
 
 function SerieButton({ numero, feita, onClick }) {
   return (
-    <button onClick={onClick} style={{
+    <button onClick={onClick} className={`serie-btn ${feita ? 'feita' : ''}`} style={{
       width: 40, height: 40, borderRadius: '50%',
-      background: feita ? 'var(--green)' : 'var(--bg-input)',
+      background: feita ? 'var(--lime)' : 'var(--bg-4)',
       border: `1px solid ${feita ? 'transparent' : 'var(--border)'}`,
-      color: feita ? '#121212' : 'var(--text-muted)',
+      color: feita ? '#121212' : 'var(--text-3)',
       fontSize: 13, fontWeight: 700, display: 'flex',
       alignItems: 'center', justifyContent: 'center', transition: 'all .2s',
     }}>
@@ -412,8 +413,8 @@ function ExercicioCard({ ex, index, onToggleSerie, onToggleConcluido, expandido,
 
   return (
     <div style={{
-      background: ex.concluido ? 'rgba(201,242,77,0.09)' : 'var(--bg-card)',
-      border: `1px solid ${ex.concluido ? 'var(--border-strong)' : 'var(--border)'}`,
+      background: ex.concluido ? 'rgba(201,242,77,0.09)' : 'var(--bg-3)',
+      border: `1px solid ${ex.concluido ? 'var(--border-2)' : 'var(--border)'}`,
       borderRadius: 16, overflow: 'hidden', transition: 'all .25s',
       flexShrink: 0,
       animation: `fadeUp .3s ease ${index * 0.06}s both`,
@@ -427,42 +428,42 @@ function ExercicioCard({ ex, index, onToggleSerie, onToggleConcluido, expandido,
       >
         <div style={{
           width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-          background: ex.concluido ? 'var(--green)' : 'var(--bg-input)',
+          background: ex.concluido ? 'var(--lime)' : 'var(--bg-4)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: ex.concluido ? '#111' : 'var(--text-muted)', fontWeight: 700,
+          color: ex.concluido ? '#111' : 'var(--text-2)', fontWeight: 700,
         }}>
           {ex.concluido ? '✓' : index + 1}
         </div>
         <div style={{ textAlign: 'left', flex: 1, minWidth: 0 }}>
           <p style={{
             fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 16,
-            color: ex.concluido ? 'var(--text-muted)' : 'var(--text)',
+            color: ex.concluido ? 'var(--text-2)' : 'var(--text)',
             textDecoration: ex.concluido ? 'line-through' : 'none',
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
           }}>
             {ex.nome}
           </p>
-          <p style={{ color: 'var(--text-dim)', fontSize: 12 }}>
+          <p style={{ color: 'var(--text-3)', fontSize: 12 }}>
             {ex.series}x{ex.repeticoes > 0 ? ex.repeticoes : 'falha'} {ex.carga > 0 ? `• ${ex.carga}kg` : ''} • {totalFeitas}/{ex.series}
           </p>
         </div>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-dim)', flexShrink: 0 }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-3)', flexShrink: 0 }}>
           {ex.video_url ? (
-            <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--green)' }} title="Tem video">▶</span>
+            <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--lime)' }} title="Tem video">▶</span>
           ) : null}
           <span>{expandido ? '▴' : '▾'}</span>
         </span>
       </button>
 
       <div style={{ height: 3, background: 'rgba(255,255,255,0.06)', margin: '0 14px' }}>
-        <div style={{ height: '100%', width: `${progresso}%`, background: 'var(--green)', transition: 'width .3s ease' }} />
+        <div style={{ height: '100%', width: `${progresso}%`, background: 'var(--lime)', transition: 'width .3s ease' }} />
       </div>
 
       {expandido && (
         <div style={{ padding: 14 }}>
           {ex.video_url ? (
             <>
-              <p style={{ fontSize: 11, color: 'var(--text-dim)', textTransform: 'uppercase', marginBottom: 8 }}>Como fazer</p>
+              <p style={{ fontSize: 11, color: 'var(--text-3)', textTransform: 'uppercase', marginBottom: 8 }}>Como fazer</p>
               <ExercicioVideoDemo url={ex.video_url} />
               {!parseVideoEmbed(ex.video_url) ? (
                 <p style={{ fontSize: 12, color: '#ff7676', marginBottom: 12 }}>
@@ -473,7 +474,7 @@ function ExercicioCard({ ex, index, onToggleSerie, onToggleConcluido, expandido,
               ) : null}
             </>
           ) : null}
-          <p style={{ fontSize: 11, color: 'var(--text-dim)', textTransform: 'uppercase', marginBottom: 8 }}>Series</p>
+          <p style={{ fontSize: 11, color: 'var(--text-3)', textTransform: 'uppercase', marginBottom: 8 }}>Series</p>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
             {Array.from({ length: ex.series }).map((_, i) => (
               <SerieButton
@@ -488,8 +489,8 @@ function ExercicioCard({ ex, index, onToggleSerie, onToggleConcluido, expandido,
             onClick={() => onToggleConcluido(ex.id)}
             style={{
               width: '100%', padding: '12px', borderRadius: 12, fontWeight: 700,
-              background: ex.concluido ? 'var(--bg-input)' : 'var(--green)',
-              color: ex.concluido ? 'var(--text-muted)' : '#111',
+              background: ex.concluido ? 'var(--bg-4)' : 'var(--lime)',
+              color: ex.concluido ? 'var(--text-2)' : '#111',
               border: `1px solid ${ex.concluido ? 'var(--border)' : 'transparent'}`,
             }}
           >
@@ -887,436 +888,187 @@ export default function Treino() {
     return (
       <>
       {toastLayer}
-      <div style={{
-        minHeight: '100dvh', padding: '16px', paddingTop: 'calc(var(--safe-top) + 12px)',
-        paddingBottom: 'calc(86px + var(--safe-bottom))', display: 'flex',
-        flexDirection: 'column', gap: 12, overflowY: 'auto',
-      }}>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 34, fontWeight: 900 }}>Treinos</h1>
+      <div className="treino-container">
+        <div className="treino-header">
+          <p style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 2 }}>Seu Plano</p>
+          <h1 className="treino-title">Treinos</h1>
+        </div>
 
         {listaLoading && (
-          <div style={{
-            borderRadius: 12, border: '1px solid var(--border)', background: 'var(--bg-card)',
-            color: 'var(--text-muted)', padding: 14, fontSize: 13,
-          }}>
+          <div className="dash-loading anim">
             Carregando treinos...
           </div>
         )}
 
         {!listaLoading && listaError && (
-          <div style={{
-            borderRadius: 12, border: '1px solid var(--border)', background: 'var(--bg-card)',
-            color: '#ff7676', padding: 14, fontSize: 13,
-          }}>
+          <div className="dash-warning anim">
             {listaError}
           </div>
         )}
 
         {!listaLoading && listaAviso && (
-          <div style={{
-            borderRadius: 12,
-            border: '1px solid rgba(252, 211, 77, 0.45)',
-            background: 'rgba(252, 211, 77, 0.08)',
-            color: '#fcd34d',
-            padding: 14,
-            fontSize: 13,
-            lineHeight: 1.45,
-          }}>
+          <div className="dash-warning anim" style={{ color: 'var(--amber)', borderColor: 'var(--amber-dim)' }}>
             {listaAviso}
           </div>
         )}
 
-        <div style={{
-          borderRadius: 16,
-          border: '1px solid var(--border)',
-          background: 'var(--bg-card)',
-          padding: 12,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 10,
-        }}>
+        <div className="resumo-card anim" style={{ padding: 12 }}>
           <button
             onClick={() => setBuilderExpandido((prev) => !prev)}
-            style={{
-              width: '100%',
-              borderRadius: 10,
-              border: '1px solid var(--border)',
-              background: 'var(--bg-input)',
-              color: 'var(--text)',
-              fontWeight: 800,
-              fontFamily: 'var(--font-display)',
-              padding: '10px 12px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
+            className="btn-add-treino"
           >
-            Treino personalizado
-            <span style={{ color: 'var(--text-muted)' }}>{builderExpandido ? '▴' : '▾'}</span>
+            {builderExpandido ? 'Fechar Criador' : '+ Criar Treino Personalizado'}
+            <span style={{ marginLeft: 'auto' }}>{builderExpandido ? '▴' : '▾'}</span>
           </button>
-
+          
           {builderExpandido && (
-            <>
-              <input
-                value={builderNome}
-                onChange={(e) => setBuilderNome(e.target.value)}
-                placeholder="Nome do treino"
-                style={{
-                  width: '100%',
-                  height: 42,
-                  borderRadius: 10,
-                  background: 'var(--bg-input)',
-                  border: '1px solid var(--border)',
-                  padding: '0 10px',
-                }}
-              />
+            <div className="anim" style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 12 }}>
+              <div className="field">
+                <input
+                  className="input"
+                  value={builderNome}
+                  onChange={(e) => setBuilderNome(e.target.value)}
+                  placeholder="Nome do treino (ex: Peito e Tríceps)"
+                />
+              </div>
 
-              <select
-                value={builderCategoria}
-                onChange={(e) => setBuilderCategoria(e.target.value)}
-                style={{
-                  width: '100%',
-                  height: 42,
-                  borderRadius: 10,
-                  background: 'var(--bg-input)',
-                  border: '1px solid var(--border)',
-                  padding: '0 10px',
-                  color: 'var(--text)',
-                }}
-              >
-                {CATEGORIAS.filter((cat) => cat.id !== 'all').map((cat) => (
-                  <option key={cat.id} value={cat.id}>{cat.label}</option>
-                ))}
-              </select>
+              <div className="field">
+                <select
+                  className="input"
+                  value={builderCategoria}
+                  onChange={(e) => setBuilderCategoria(e.target.value)}
+                >
+                  {CATEGORIAS.filter((cat) => cat.id !== 'all').map((cat) => (
+                    <option key={cat.id} value={cat.id}>{cat.label}</option>
+                  ))}
+                </select>
+              </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {builderExercicios.map((exercicio, index) => (
-                  <div
-                    key={exercicio.id}
-                    style={{
-                      borderRadius: 12,
-                      border: '1px solid var(--border)',
-                      background: 'var(--bg)',
-                      padding: 10,
-                      display: 'grid',
-                      gap: 8,
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <p style={{ fontWeight: 700, fontSize: 13, color: 'var(--text-muted)' }}>Exercicio {index + 1}</p>
+                  <div key={exercicio.id} className="resumo-card" style={{ padding: 12, background: 'var(--bg-4)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                      <p style={{ fontWeight: 800, fontSize: 12, color: 'var(--text-2)' }}>EXERCÍCIO {index + 1}</p>
                       <button
                         onClick={() => removerExercicioBuilder(exercicio.id)}
                         disabled={builderExercicios.length === 1}
-                        style={{
-                          borderRadius: 8,
-                          border: '1px solid var(--border)',
-                          background: 'var(--bg-card)',
-                          color: 'var(--text-muted)',
-                          fontSize: 12,
-                          padding: '4px 8px',
-                        }}
+                        style={{ color: 'var(--red)', fontSize: 11, fontWeight: 700, background: 'none', border: 'none' }}
                       >
                         Remover
                       </button>
                     </div>
 
                     <input
+                      className="input"
                       value={exercicio.nome}
                       onChange={(e) => atualizarExercicioBuilder(exercicio.id, 'nome', e.target.value)}
-                      placeholder="Nome do exercicio"
-                      style={{
-                        width: '100%',
-                        height: 38,
-                        borderRadius: 10,
-                        background: 'var(--bg-input)',
-                        border: '1px solid var(--border)',
-                        padding: '0 10px',
-                      }}
+                      placeholder="Nome do exercício"
+                      style={{ marginBottom: 8 }}
                     />
 
-                    <div style={{ display: 'grid', gap: 8, gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
-                      <input
-                        value={exercicio.series}
-                        onChange={(e) => atualizarExercicioBuilder(exercicio.id, 'series', e.target.value)}
-                        placeholder="Series"
-                        inputMode="numeric"
-                        style={{
-                          width: '100%',
-                          height: 38,
-                          borderRadius: 10,
-                          background: 'var(--bg-input)',
-                          border: '1px solid var(--border)',
-                          padding: '0 10px',
-                        }}
-                      />
-                      <input
-                        value={exercicio.repeticoes}
-                        onChange={(e) => atualizarExercicioBuilder(exercicio.id, 'repeticoes', e.target.value)}
-                        placeholder="Reps"
-                        inputMode="numeric"
-                        style={{
-                          width: '100%',
-                          height: 38,
-                          borderRadius: 10,
-                          background: 'var(--bg-input)',
-                          border: '1px solid var(--border)',
-                          padding: '0 10px',
-                        }}
-                      />
-                      <input
-                        value={exercicio.carga}
-                        onChange={(e) => atualizarExercicioBuilder(exercicio.id, 'carga', e.target.value)}
-                        placeholder="Carga kg"
-                        inputMode="numeric"
-                        style={{
-                          width: '100%',
-                          height: 38,
-                          borderRadius: 10,
-                          background: 'var(--bg-input)',
-                          border: '1px solid var(--border)',
-                          padding: '0 10px',
-                        }}
-                      />
+                    <div style={{ display: 'grid', gap: 8, gridTemplateColumns: '1fr 1fr 1fr', marginBottom: 8 }}>
+                      <input className="input" value={exercicio.series} onChange={(e) => atualizarExercicioBuilder(exercicio.id, 'series', e.target.value)} placeholder="Séries" inputMode="numeric" />
+                      <input className="input" value={exercicio.repeticoes} onChange={(e) => atualizarExercicioBuilder(exercicio.id, 'repeticoes', e.target.value)} placeholder="Reps" inputMode="numeric" />
+                      <input className="input" value={exercicio.carga} onChange={(e) => atualizarExercicioBuilder(exercicio.id, 'carga', e.target.value)} placeholder="Kg" inputMode="numeric" />
                     </div>
+                    
                     <input
+                      className="input"
                       value={exercicio.video_url ?? ''}
                       onChange={(e) => atualizarExercicioBuilder(exercicio.id, 'video_url', e.target.value)}
-                      placeholder="Video (YouTube, Vimeo ou .mp4) — opcional"
-                      inputMode="url"
-                      autoCapitalize="off"
-                      autoCorrect="off"
-                      spellCheck={false}
-                      style={{
-                        width: '100%',
-                        height: 38,
-                        borderRadius: 10,
-                        background: 'var(--bg-input)',
-                        border: '1px solid var(--border)',
-                        padding: '0 10px',
-                        fontSize: 13,
-                      }}
+                      placeholder="URL do vídeo (YouTube/Vimeo)"
+                      style={{ fontSize: 12 }}
                     />
                   </div>
                 ))}
               </div>
 
               <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={adicionarExercicioBuilder} className="btn" style={{ flex: 1, fontSize: 12 }}>+ Exercício</button>
                 <button
-                  onClick={adicionarExercicioBuilder}
-                  style={{
-                    flex: 1,
-                    borderRadius: 10,
-                    border: '1px solid var(--border)',
-                    background: 'var(--bg-input)',
-                    color: 'var(--text)',
-                    fontWeight: 700,
-                    padding: '10px 12px',
-                  }}
-                >
-                  + Adicionar exercicio
-                </button>
-                <button
-                  type="button"
                   onClick={salvarTreinoPersonalizado}
                   disabled={!builderValido || builderSalvando}
-                  style={{
-                    flex: 1,
-                    borderRadius: 10,
-                    border: '1px solid transparent',
-                    background: builderValido && !builderSalvando ? 'var(--green)' : 'var(--bg-input)',
-                    color: builderValido && !builderSalvando ? '#111' : 'var(--text-muted)',
-                    fontWeight: 800,
-                    padding: '10px 12px',
-                  }}
+                  className="btn-primary"
+                  style={{ flex: 1, fontSize: 12 }}
                 >
-                  {builderSalvando ? 'Salvando...' : 'Salvar treino'}
+                  {builderSalvando ? 'Salvando...' : 'Salvar Treino'}
                 </button>
               </div>
 
               {builderMensagem.texto && (
-                <p style={{
-                  fontSize: 12,
-                  color: builderMensagem.tipo === 'erro' ? '#ff7676' : 'var(--green)',
-                  fontWeight: 700,
-                }}>
+                <p style={{ fontSize: 11, textAlign: 'center', color: builderMensagem.tipo === 'erro' ? 'var(--red)' : 'var(--lime)', fontWeight: 700 }}>
                   {builderMensagem.texto}
                 </p>
               )}
-            </>
+            </div>
           )}
         </div>
 
-        <div style={{ position: 'relative' }}>
+        <div className="search-field">
           <input
+            className="search-input"
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
-            placeholder="Buscar treino..."
-            style={{
-              width: '100%', height: 44, borderRadius: 12, background: 'var(--bg-input)',
-              border: '1px solid var(--border)', padding: '0 44px 0 12px', fontSize: 14,
-            }}
+            placeholder="Buscar treino ou exercício..."
           />
-          <span style={{ position: 'absolute', right: 14, top: 12, color: 'var(--green)' }}>⌕</span>
+          <span className="search-icon">🔍</span>
         </div>
 
-        <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 2 }}>
+        <div className="filter-scroll">
           {CATEGORIAS.map((cat) => {
             const ativo = cat.id === filtroCategoria
             return (
               <button
                 key={cat.id}
-                type="button"
-                title={cat.label}
-                aria-label={cat.label}
-                aria-pressed={ativo}
                 onClick={() => setFiltroCategoria(cat.id)}
-                style={{
-                  flexShrink: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 44,
-                  height: 44,
-                  borderRadius: 12,
-                  border: '1px solid var(--border)',
-                  background: ativo ? 'var(--green)' : 'var(--bg-card)',
-                  color: ativo ? '#111' : 'var(--text-muted)',
-                }}
+                className={`filter-btn ${ativo ? 'active' : ''}`}
               >
                 <IconFiltroCategoria id={cat.id} />
+                {cat.label}
               </button>
             )
           })}
         </div>
 
-        <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 2 }}>
+        <div className="filter-scroll" style={{ paddingTop: 0 }}>
           {personais.map((personal) => {
             const ativo = personal === filtroPersonal
             return (
               <button
                 key={personal}
                 onClick={() => setFiltroPersonal(personal)}
-                style={{
-                  whiteSpace: 'nowrap',
-                  borderRadius: 12,
-                  padding: '8px 12px',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  border: '1px solid var(--border)',
-                  background: ativo ? 'var(--green)' : 'var(--bg-card)',
-                  color: ativo ? '#111' : 'var(--text-muted)',
-                }}
+                className={`filter-btn ${ativo ? 'active' : ''}`}
               >
-                {personal === 'todos' ? 'Todos os personais' : personal}
+                {personal === 'todos' ? 'Todos os instrutores' : personal}
               </button>
             )
           })}
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {!listaLoading && treinosFiltrados.map((t, i) => (
-            <button
+            <div
               key={t.id}
+              className="treino-card anim"
+              style={{ animationDelay: `${i * 0.05}s` }}
               onClick={() => selecionarTreino(t)}
-              style={{
-                textAlign: 'left', borderRadius: 16, border: '1px solid var(--border)',
-                background: 'var(--bg-card)', overflow: 'hidden', animation: `floatIn .25s ease ${i * 0.05}s both`,
-                color: 'var(--text)',
-              }}
             >
-              <div style={{
-                minHeight: 145,
-                backgroundImage: `linear-gradient(0deg, rgba(0,0,0,0.72), rgba(0,0,0,0.25)), url(${t.thumb})`,
-                backgroundSize: 'cover', backgroundPosition: 'center',
-                padding: 12, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between',
-              }}>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-                  <div style={{
-                    width: 40, height: 40, borderRadius: 12, background: 'rgba(0,0,0,0.42)',
-                    border: '1px solid rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center',
-                    justifyContent: 'center', fontSize: 20,
-                  }}>
-                    {treinoIcone(t.categoria)}
-                  </div>
-                  <span style={{
-                    padding: '6px 10px', borderRadius: 999, background: 'rgba(0,0,0,0.5)',
-                    border: '1px solid rgba(255,255,255,0.14)', fontSize: 11, fontWeight: 700,
-                    color: '#f5f7fa',
-                  }}>
-                    {labelCategoria(t.categoria)}
-                  </span>
-                  <span style={{
-                    padding: '6px 10px', borderRadius: 999, background: 'rgba(0,0,0,0.5)',
-                    border: '1px solid rgba(255,255,255,0.14)', fontSize: 11, fontWeight: 700,
-                    color: '#f5f7fa',
-                  }}>
-                    {t.exercicios.length} exercicios
-                  </span>
-                  {t.personalizado && (
-                    <span style={{
-                      padding: '6px 10px', borderRadius: 999, background: 'rgba(201,242,77,0.2)',
-                      border: '1px solid rgba(201,242,77,0.35)', fontSize: 11, fontWeight: 700,
-                      color: '#f5f7fa',
-                    }}>
-                      Personalizado
-                    </span>
-                  )}
-                  {t.catalogo && (
-                    <span style={{
-                      padding: '6px 10px', borderRadius: 999, background: 'rgba(96,165,250,0.18)',
-                      border: '1px solid rgba(96,165,250,0.35)', fontSize: 11, fontWeight: 700,
-                      color: '#f5f7fa',
-                    }}>
-                      Academia
-                    </span>
-                  )}
-                </div>
-                <div style={{
-                  width: 34, height: 34, borderRadius: '50%', background: 'var(--green)',
-                  color: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800,
-                }}>
-                  ▶
+              <img src={t.thumb} className="treino-thumb" alt={t.nome} />
+              <div className="treino-info">
+                <h3 className="treino-name">{t.nome}</h3>
+                <div className="treino-meta">
+                  <span className="tag">{labelCategoria(t.categoria)}</span>
+                  <span>{t.exercicios.length} exs</span>
+                  {t.personalizado && <span className="tag" style={{ background: 'var(--lime-dim)', color: 'var(--lime)' }}>Personal</span>}
                 </div>
               </div>
-            </button>
+              <div className="treino-badge">▶</div>
+            </div>
           ))}
 
-          {!listaLoading && treinosFiltrados.length === 0 && todosTreinos.length > 0 && (
-            <div style={{
-              borderRadius: 12, border: '1px solid var(--border)', background: 'var(--bg-card)',
-              color: 'var(--text-dim)', textAlign: 'center', padding: 18,
-              display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
-            }}>
-              <p style={{ margin: 0 }}>
-                Nenhum treino corresponde aos filtros ou à busca. Treinos da academia ficam em chips como o nome do personal seguido de · Academia.
-              </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setFiltroCategoria('all')
-                  setFiltroPersonal('todos')
-                  setBusca('')
-                }}
-                style={{
-                  borderRadius: 12,
-                  border: '1px solid var(--green)',
-                  background: 'var(--green)',
-                  color: '#111',
-                  fontWeight: 800,
-                  padding: '10px 16px',
-                }}
-              >
-                Limpar filtros e busca
-              </button>
-            </div>
-          )}
-
-          {!listaLoading && treinosFiltrados.length === 0 && todosTreinos.length === 0 && (
-            <div style={{
-              borderRadius: 12, border: '1px solid var(--border)', background: 'var(--bg-card)',
-              color: 'var(--text-dim)', textAlign: 'center', padding: 18,
-            }}>
-              Nenhum treino na sua lista. Use o bloco Treino personalizado para criar um ou aguarde prescricao da academia.
+          {!listaLoading && treinosFiltrados.length === 0 && (
+            <div className="dash-warning" style={{ textAlign: 'center' }}>
+              Nenhum treino encontrado.
             </div>
           )}
         </div>
@@ -1334,20 +1086,20 @@ export default function Treino() {
         flexDirection: 'column', padding: 28, textAlign: 'center',
       }}>
         <div style={{
-          width: 84, height: 84, borderRadius: '50%', background: 'var(--green)',
+          width: 84, height: 84, borderRadius: '50%', background: 'var(--lime)',
           color: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 36, marginBottom: 16, boxShadow: 'var(--shadow-glow)',
         }}>
           ✓
         </div>
         <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 30, marginBottom: 8 }}>Treino concluido!</h2>
-        <p style={{ color: 'var(--text-muted)', marginBottom: 20 }}>
+        <p style={{ color: 'var(--text-2)', marginBottom: 20 }}>
           Saldo atualizado e envio para WhatsApp em andamento.
         </p>
         <button
           onClick={() => { setConcluido(false); setTreinoSelecionadoId(null) }}
           style={{
-            background: 'var(--green)', color: '#111', borderRadius: 12,
+            background: 'var(--lime)', color: '#111', borderRadius: 12,
             fontWeight: 800, padding: '12px 18px',
           }}
         >
@@ -1363,49 +1115,49 @@ export default function Treino() {
     {toastLayer}
     <div style={{
       height: '100dvh', minHeight: 0, display: 'flex', flexDirection: 'column',
-      paddingTop: 'var(--safe-top)', overflow: 'hidden',
+      paddingTop: 'var(--safe-top)', overflow: 'hidden', background: 'var(--bg)'
     }}>
-      <div style={{ padding: '14px 16px 0', flexShrink: 0 }}>
-        <div style={{
-          borderRadius: 16, border: '1px solid var(--border)', overflow: 'hidden', minHeight: 150,
-          backgroundImage: `linear-gradient(0deg, rgba(0,0,0,0.7), rgba(0,0,0,0.25)), url(${treino.thumb || THUMB_PERSONALIZADO})`,
-          backgroundSize: 'cover', backgroundPosition: 'center', padding: 12, display: 'flex',
-          flexDirection: 'column', justifyContent: 'space-between',
+      <div style={{ padding: '16px 16px 0', flexShrink: 0 }}>
+        <div className="resumo-card" style={{ 
+          minHeight: 160, 
+          backgroundImage: `linear-gradient(0deg, var(--bg-3), rgba(0,0,0,0.25)), url(${treino.thumb || THUMB_PERSONALIZADO})`,
+          backgroundSize: 'cover', backgroundPosition: 'center', 
+          display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+          border: '1px solid var(--border-2)',
+          padding: 16
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <button
               onClick={() => setTreinoSelecionadoId(null)}
-              style={{
-                width: 30, height: 30, borderRadius: 8, background: 'rgba(0,0,0,0.45)',
-                border: '1px solid rgba(255,255,255,0.2)', color: '#fff',
-              }}
+              className="btn"
+              style={{ width: 40, height: 40, padding: 0, borderRadius: 12, background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)' }}
             >
               ←
             </button>
-            <span style={{
-              padding: '6px 10px', borderRadius: 999, background: 'rgba(0,0,0,0.45)',
-              border: '1px solid rgba(255,255,255,0.2)', fontSize: 11, fontWeight: 700,
-            }}>
-              {concluidos}/{totalExercicios} feitos
+            <span className="tag" style={{ background: 'var(--lime)', color: '#000', fontWeight: 800 }}>
+              {concluidos}/{totalExercicios} EXS
             </span>
           </div>
           <div>
-            <p style={{ fontSize: 28 }}>{treinoIcone(treino.categoria)}</p>
-            <p style={{ color: 'var(--text-muted)', fontSize: 12 }}>Personal: {treino.personal}</p>
+            <h2 className="treino-name" style={{ fontSize: 24, marginBottom: 4 }}>{treino.nome}</h2>
+            <p style={{ color: 'var(--text-3)', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+              Instrutor: {treino.personal}
+            </p>
           </div>
         </div>
 
-        <div style={{ height: 5, background: 'rgba(255,255,255,0.08)', borderRadius: 999, marginTop: 10, overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${progresso}%`, background: 'var(--green)', transition: 'width .4s ease' }} />
+        <div style={{ height: 6, background: 'var(--bg-3)', borderRadius: 999, marginTop: 12, overflow: 'hidden', border: '1px solid var(--border)' }}>
+          <div style={{ height: '100%', width: `${progresso}%`, background: 'var(--lime)', transition: 'width .6s cubic-bezier(0.16, 1, 0.3, 1)', boxShadow: '0 0 10px var(--lime-dim)' }} />
         </div>
       </div>
 
       <div
         ref={scrollRef}
+        className="anim"
         style={{
-          flex: 1, minHeight: 0, overflowY: 'auto', padding: '12px 16px',
-          paddingBottom: 'calc(88px + var(--safe-bottom))', display: 'flex',
-          flexDirection: 'column', gap: 10,
+          flex: 1, minHeight: 0, overflowY: 'auto', padding: '16px',
+          paddingBottom: 'calc(100px + var(--safe-bottom))', display: 'flex',
+          flexDirection: 'column', gap: 12,
         }}
       >
         {treino.exercicios.map((ex, i) => (
@@ -1424,23 +1176,19 @@ export default function Treino() {
           <button
             onClick={finalizarTreino}
             disabled={concluindo || concluidos !== totalExercicios}
+            className={concluidos === totalExercicios ? "btn-primary" : "btn"}
             style={{
               width: '100%',
-              padding: 16,
-              borderRadius: 14,
-              background: concluidos === totalExercicios ? 'var(--green)' : 'var(--bg-input)',
-              color: concluidos === totalExercicios ? '#111' : 'var(--text-muted)',
-              fontWeight: 800,
-              fontFamily: 'var(--font-display)',
-              marginTop: 4,
-              border: `1px solid ${concluidos === totalExercicios ? 'transparent' : 'var(--border)'}`,
+              padding: 18,
+              marginTop: 8,
+              opacity: (concluindo || (concluidos !== totalExercicios)) ? 0.6 : 1
             }}
           >
             {concluindo
-              ? 'Enviando para WhatsApp...'
+              ? 'Enviando...'
               : concluidos === totalExercicios
-                ? 'Finalizar treino'
-                : 'Conclua todos os exercicios para finalizar'}
+                ? 'FINALIZAR TREINO 💪'
+                : `CONCLUA MAIS ${totalExercicios - concluidos} EXERCÍCIOS`}
           </button>
         )}
       </div>

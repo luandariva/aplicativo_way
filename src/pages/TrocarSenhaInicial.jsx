@@ -19,7 +19,7 @@ export default function TrocarSenhaInicial() {
       return
     }
     if (novaSenha !== confirmacao) {
-      setErro('As senhas nao conferem.')
+      setErro('As senhas não conferem.')
       return
     }
 
@@ -36,78 +36,53 @@ export default function TrocarSenhaInicial() {
 
   return (
     <div style={{
-      minHeight: '100dvh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: 20,
-      background: 'var(--bg)',
+      minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: 20, background: 'var(--bg)',
     }}>
-      <div style={{ width: '100%', maxWidth: 380 }}>
+      <div className="anim" style={{ width: '100%', maxWidth: 380 }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 800, marginBottom: 8 }}>
           Trocar senha inicial
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: 14, marginBottom: 20 }}>
-          Por seguranca, altere sua senha temporaria para continuar.
+        <p style={{ color: 'var(--text-2)', fontSize: 14, marginBottom: 20 }}>
+          Por segurança, altere sua senha temporária para continuar.
         </p>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div style={{
-            background: 'var(--bg-input)', borderRadius: 'var(--radius-sm)',
-            border: '1px solid var(--border)', padding: '14px 16px',
-          }}>
-            <div style={{ fontSize: 11, color: 'var(--text-dim)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-              Nova senha
-            </div>
+          <div className="field">
+            <label>Nova senha</label>
             <input
-              type="password"
-              value={novaSenha}
-              onChange={(e) => setNovaSenha(e.target.value)}
-              placeholder="Minimo 8 caracteres"
-              required
-              style={{ width: '100%', color: 'var(--text)', fontSize: 15, background: 'none' }}
+              type="password" className="input" value={novaSenha} onChange={(e) => setNovaSenha(e.target.value)}
+              placeholder="Mínimo 8 caracteres" required
             />
           </div>
 
-          <div style={{
-            background: 'var(--bg-input)', borderRadius: 'var(--radius-sm)',
-            border: '1px solid var(--border)', padding: '14px 16px',
-          }}>
-            <div style={{ fontSize: 11, color: 'var(--text-dim)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-              Confirmar senha
-            </div>
+          <div className="field">
+            <label>Confirmar senha</label>
             <input
-              type="password"
-              value={confirmacao}
-              onChange={(e) => setConfirmacao(e.target.value)}
-              placeholder="Repita a nova senha"
-              required
-              style={{ width: '100%', color: 'var(--text)', fontSize: 15, background: 'none' }}
+              type="password" className="input" value={confirmacao} onChange={(e) => setConfirmacao(e.target.value)}
+              placeholder="Repita a nova senha" required
             />
           </div>
 
           {erro && (
             <div style={{
-              background: 'rgba(226,75,74,0.1)', border: '1px solid rgba(226,75,74,0.3)',
-              borderRadius: 'var(--radius-xs)', padding: '10px 14px', fontSize: 13, color: '#F09595',
+              background: 'rgba(240,91,91,0.1)', border: '1px solid rgba(240,91,91,0.2)',
+              borderRadius: 'var(--radius)', padding: '10px 14px', fontSize: 13, color: 'var(--red)',
             }}>
               {erro}
             </div>
           )}
           {ok && (
             <div style={{
-              background: 'rgba(90,190,120,0.12)', border: '1px solid rgba(90,190,120,0.35)',
-              borderRadius: 'var(--radius-xs)', padding: '10px 14px', fontSize: 13, color: '#b7f0c4',
+              background: 'rgba(75,240,122,0.12)', border: '1px solid rgba(75,240,122,0.35)',
+              borderRadius: 'var(--radius)', padding: '10px 14px', fontSize: 13, color: 'var(--lime)',
             }}>
               {ok}
             </div>
           )}
 
-          <button type="submit" disabled={loading} style={{
-            marginTop: 8, background: 'var(--green)', color: '#fff',
-            borderRadius: 'var(--radius-sm)', padding: '16px',
-            fontSize: 15, fontWeight: 600, fontFamily: 'var(--font-display)',
-            opacity: loading ? 0.7 : 1,
+          <button type="submit" className="btn btn-primary" disabled={loading} style={{
+            marginTop: 8, padding: '16px', fontSize: 15,
           }}>
             {loading ? 'Atualizando...' : 'Salvar nova senha'}
           </button>
