@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'logo_way.svg', 'apple-touch-icon.png', 'pwa-192x192.png', 'pwa-512x512.png'],
       manifest: {
-        name: 'AlimentaAI',
-        short_name: 'AlimentaAI',
+        name: 'Way',
+        short_name: 'Way',
         description: 'Seu assistente de nutricao e treino',
         theme_color: '#1B8A4E',
         background_color: '#0D1F16',
