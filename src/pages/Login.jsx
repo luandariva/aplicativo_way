@@ -20,7 +20,6 @@ export default function Login() {
     <div className="page" style={{ justifyContent: 'center', paddingTop: 'calc(var(--safe-top) + 24px)' }}>
       <div className="anim" style={{ width: '100%', maxWidth: 420, margin: '0 auto' }}>
         <div style={{ marginBottom: 24 }}>
-          <p className="overline">Acesso</p>
           <div style={{ marginTop: 8, display: 'flex', justifyContent: 'center' }}>
             <img
               src="/logo_way_512.svg"
