@@ -1,78 +1,94 @@
-# Design System Strategy: Kinetic Industrialism
+# Design System e decisões do app (Way)
 
-## 1. Overview & Creative North Star
-The Creative North Star for this design system is **"The Kinetic Industrialist."** 
+Este documento descreve **como o app Way deve ser**: identidade visual, tokens, componentes e também decisões de produto/stack que afetam UI/UX (PWA, ícones, rotas).
 
-This is not a standard fitness app; it is a high-performance engine. We are moving away from the soft, rounded "lifestyle" aesthetic typical of the industry and leaning into a brutalist, editorial precision. By utilizing raw, sharp angles—inspired by the brand's signature 'WAY' wordmark—and a total rejection of traditional borders, we create a digital space that feels as uncompromising as a heavy lifting session.
+## 1. Visão e norte criativo
+O norte criativo é **“Industrial Editorial”**: visual cru, técnico e rápido, com **arestas vivas**, hierarquia tipográfica forte e separação por **camadas tonais** (não por linhas).
 
-The layout strategy relies on **intentional asymmetry**. We break the traditional grid by allowing high-impact typography to bleed across sections and using overlapping layers to create a sense of forward momentum. This is a system built for speed, depth, and peak performance.
+- **Sem estética “lifestyle” arredondada**: nada de “pílulas” e cards com cantos grandes.
+- **Geometria**: ângulos retos e, quando fizer sentido, recortes (ex.: `clip-path`) para remeter à marca.
+- **Assimetria intencional**: títulos grandes + micro-labels técnicos, com “dead space” para ritmo.
 
----
+## 2. Paleta e regras de contraste (UI neutra)
+Decisão: **não usar amarelo/verde em degradê** (nem como acento, nem em CTA, nem em progresso). O app é **preto + cinza + branco/off‑white**.
 
-### 2. Colors: Tonal Depth & High-Vis Energy
+### 2.1. Camadas (no-line rule)
+**Regra “No‑Line”**: evitar `border: 1px solid ...` como separador. Separação deve ser por **mudança de fundo** + **espaçamento**.
 
-Our palette is anchored in deep obsidian and industrial greys, punctuated by a singular, high-vis accent.
+Camadas recomendadas:
+- **Background (nível 0)**: `#0e0e0e`
+- **Surface 1 (nível 1 / seções)**: `#131313`
+- **Surface 2 (nível 2 / plates)**: `#1a1a1a`
+- **Surface 3 (nível 3 / plates ativas)**: `#20201f`
 
-*   **Primary Accent (`#f3ffca` / `#cafd00`):** This is our "Electric Acid" energy. Use it sparingly but with high impact for CTAs, progress indicators, and critical performance metrics. 
-*   **The "No-Line" Rule:** We do not use 1px solid borders to separate content. In this system, boundaries are defined by **Background Shifts**. A section in `surface-container-low` (#131313) sitting on a `background` (#0e0e0e) provides all the distinction required.
-*   **Surface Hierarchy & Nesting:** Treat the UI as a series of physical plates. 
-    *   **Level 0 (Background):** `#0e0e0e` (Base environment)
-    *   **Level 1 (Sectioning):** `surface-container` (#1a1a1a)
-    *   **Level 2 (Active Cards):** `surface-container-high` (#20201f)
-*   **The "Glass & Gradient" Rule:** To avoid a flat, "template" look, floating modals or performance overlays should use **Glassmorphism**. Combine `surface` colors at 70% opacity with a `24px` backdrop blur. For primary CTAs, apply a subtle linear gradient from `primary` (#f3ffca) to `primary-container` (#cafd00) at a 45-degree angle to simulate the sheen of high-tech athletic gear.
+### 2.2. Highlights (off‑white)
+Decisão: **destaques e estados ativos** (tabs/chips/dia selecionado/BottomNav ativo) usam **off‑white**:
+- **Highlight background**: `rgba(255,255,255,0.92)`
+- **Highlight foreground**: `rgba(0,0,0,0.90)`
+- **Highlight dim (hover/press)**: `rgba(255,255,255,0.10)`
 
----
+### 2.3. Glass (neutro)
+Glassmorphism é permitido (principalmente em modais/overlays):
+- **Glass**: cinza neutro com ~70% de opacidade (sem “cor de acento”)
+- **Blur**: `24px`
 
-### 3. Typography: Industrial Editorial
+## 3. Tipografia (decisão)
+Decisão de fontes:
+- **Display / headlines**: **Lexend**
+- **Labels / dados técnicos**: **Space Grotesk**
+- **Body / textos longos**: **Inter**
 
-Typography is the primary driver of our brand’s "Industrial" voice.
+Ritmo recomendado:
+- **Headline grande** + **label pequena** (tracking maior) para contraste editorial.
 
-*   **Display & Headlines (Lexend):** We use Lexend for its geometric, high-stability feel. `display-lg` (3.5rem) should be used for hero statements, often set in All Caps to mimic the "WAY" wordmark’s authority.
-*   **The Technical Layer (Space Grotesk):** For labels and data points (the "Performance Tracking" elements), we use Space Grotesk. Its quirky, technical character suggests precision and scientific tracking.
-*   **The Narrative Layer (Inter):** Inter handles the heavy lifting of Titles and Body copy. It provides the necessary readability contrast against the aggressive headline styles.
-*   **Visual Rhythm:** Pair a massive `display-md` headline with a tiny, tracked-out `label-sm` in the primary accent color to create a high-fashion, editorial contrast.
+## 4. Forma, raio e “cantinhos”
+Decisão: **border-radius = 0px** como regra padrão.
 
----
+- **Permitido**: recortes/ângulos (ex.: `clip-path`) para criar identidade.
+- **Evitar**: chips/pills circulares e botões redondos.
 
-### 4. Elevation & Depth: Tonal Layering
+## 5. Componentes (regras de UI)
+### 5.1. Botões
+Decisão: **botões primários (CTA)** são **off‑white** (sem gradiente):
+- **Fundo**: `--hi-bg` (off‑white)
+- **Texto/ícone**: `--hi-fg` (escuro)
+- **Hover**: leve `brightness()` e sombra difusa neutra (sem glow colorido)
 
-We reject traditional material shadows in favor of **Tonal Layering** and **Ambient Glows**.
+### 5.2. Inputs
+Decisão: inputs são **bottom-line only**:
+- **Sem caixa** (sem borda completa)
+- **Linha** em estado normal: neutra
+- **Focus**: linha mais forte (2px) e contraste neutro (sem amarelo)
 
-*   **The Layering Principle:** Depth is achieved by stacking. A `surface-container-lowest` (#000000) card nested within a `surface-container-high` (#20201f) area creates a recessed, "etched" look that feels premium and custom.
-*   **Ambient Shadows:** If a card must float (e.g., a "Start Workout" button), use an extra-diffused shadow. 
-    *   *Shadow Setting:* `0px 20px 40px rgba(0, 0, 0, 0.4)` tinted with the `on-surface` hue.
-*   **The "Ghost Border" Fallback:** If a container is placed on an image background, use the `outline-variant` token at **15% opacity**. This creates a "breath" of a border rather than a hard line.
-*   **Angular Cutouts:** In reference to the logo, avoid `0px` roundedness (as per the scale) but experiment with **clipped corners** on cards to reinforce the sharp, high-performance visual language.
+### 5.3. Tabs / chips / filtros
+Decisão:
+- **Ativo**: off‑white (`--hi-bg`/`--hi-fg`)
+- **Inativo**: plate neutro (camadas tonais)
+- **Sem gradientes**
 
----
+### 5.4. Navegação inferior (BottomNav)
+Decisão:
+- Sem `border-top` como separador
+- Pode usar glass/plate para fundo
+- **Ativo** em off‑white (inclui botão central quando aplicável)
 
-### 5. Components: Precision Tools
+## 6. Conteúdo e branding
+Decisões de marca:
+- **Nome do PWA/app**: **Way** (não “AlimentaAI”).
+- **Login**: logo centralizada; remover textos promocionais (“Treino e nutrição...” e “Acesso”) quando solicitado.
 
-*   **Performance Buttons:** 
-    *   **Primary:** Sharp edges (0px radius). Background: `primary` (#f3ffca). Text: `on-primary` (#516700). High-impact hover state: Glow effect using the primary color.
-    *   **Tertiary:** Text-only in `primary`, with a `2px` underline that only spans 50% of the word’s width, aligned to the right.
-*   **Stylized Workout Cards:** 
-    *   Use `surface-container-low` as the base.
-    *   No dividers. Use `spacing-8` (1.75rem) to separate the workout title from the rep count.
-    *   Background images should have a `surface-dim` (#0e0e0e) overlay at 40% to ensure typography pop.
-*   **Performance Charts:** 
-    *   Lines should be `primary` (#f3ffca) with a thickness of `2px`.
-    *   Area under the curve should use a gradient from `primary` at 20% opacity to `transparent` at the bottom.
-*   **Input Fields:** 
-    *   Forbid "box" inputs. Use a "Bottom-Line Only" approach using the `outline` token (#767575). On focus, the line transitions to `primary` and grows to `2px`.
+## 7. PWA (ícones e nomes)
+Decisões:
+- **`apple-touch-icon.png`**: **180×180**
+- **PWA icons**: **192×192** e **512×512**
+- Manter o manifest e o `index.html` consistentes com **Way**.
 
----
+Nomes de arquivos (padrão recomendado em `public/`):
+- `apple-touch-icon.png` (180×180)
+- `pwa-192x192.png` (192×192)
+- `pwa-512x512.png` (512×512)
 
-### 6. Do's and Don'ts
-
-#### Do:
-*   **Do** use extreme scale. Pair very large typography with very small, technical labels.
-*   **Do** use "Dead Space." Use `spacing-24` (5.5rem) to create dramatic pauses between content blocks.
-*   **Do** utilize the `primary` accent for data-rich moments (e.g., heart rate, PRs).
-*   **Do** ensure all imagery is high-contrast, desaturated, or black and white to match the brand's "Deep Black" aesthetic.
-
-#### Don't:
-*   **Don't** use any border-radius. Every corner in this system must be a sharp 90-degree angle (0px).
-*   **Don't** use standard grey shadows. If it's not a tonal shift, it shouldn't be there.
-*   **Don't** use generic iconography. Icons must be sharp, thin-stroke (1.5px), and follow the angularity of the "WAY" logo.
-*   **Don't** use dividers or separators. If the content feels cluttered, increase the vertical spacing using the `spacing-12` token or higher.
+## 8. SPA + deploy (Vercel) e rotas
+Decisões técnicas que afetam UX:
+- O app é uma **SPA (React Router)**. Abrir rotas “direto” (ex.: via WhatsApp) **não pode dar 404**.
+- Na Vercel, usar **rewrites de SPA** para servir `index.html` nas rotas do app **sem reescrever arquivos estáticos** (ex.: `manifest.webmanifest`, SW, assets), para evitar problemas de cache/instalação do PWA exibindo nome antigo.
