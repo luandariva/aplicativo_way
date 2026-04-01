@@ -45,7 +45,7 @@ export default function WeekCalendar({ selectedDate, onSelectDate }) {
 
   return (
     <div className="anim" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: '#fff', margin: 0, marginLeft: 2 }}>
+      <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 800, color: 'var(--text)', margin: 0, marginLeft: 2, textTransform: 'uppercase', letterSpacing: '-0.01em' }}>
         {headerText}
       </h2>
 
@@ -59,28 +59,31 @@ export default function WeekCalendar({ selectedDate, onSelectDate }) {
         {days.map((d) => {
           const active = isSameDay(d, selectedDate)
           return (
-            <div 
+              <div 
               key={d.toISOString()}
               className={`cal-item ${active ? 'cal-item-active' : ''}`}
               onClick={() => onSelectDate(d)}
               style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                minWidth: 50, height: 66, borderRadius: 'var(--radius)',
-                background: active ? 'var(--lime)' : 'var(--bg-3)',
-                color: active ? '#000' : 'var(--text-2)',
+                minWidth: 52, height: 68, borderRadius: 0,
+                background: active ? 'var(--hi-bg)' : 'var(--surface-2)',
+                color: active ? 'var(--hi-fg)' : 'var(--text-2)',
                 cursor: 'pointer', transition: 'all 0.2s', position: 'relative', flexShrink: 0,
-                border: active ? 'none' : '1px solid var(--border-2)',
+                border: 'none',
+                clipPath: active
+                  ? 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))'
+                  : 'polygon(0 0, 100% 0, 100% 100%, 0 100%)',
               }}
             >
-              <span style={{ fontSize: 11, fontWeight: 500, marginBottom: 4, color: active ? '#333' : 'var(--text-3)' }}>
+              <span style={{ fontSize: 10, fontWeight: 700, marginBottom: 4, color: active ? 'rgba(0,0,0,0.62)' : 'var(--text-3)', letterSpacing: '0.14em', fontFamily: 'var(--font-tech)', textTransform: 'uppercase' }}>
                 {DAY_NAMES[d.getDay()]}
               </span>
-              <span style={{ fontSize: 18, fontFamily: 'var(--font-display)', fontWeight: 800 }}>
+              <span style={{ fontSize: 18, fontFamily: 'var(--font-display)', fontWeight: 900, letterSpacing: '-0.02em' }}>
                 {d.getDate()}
               </span>
 
               {active && (
-                <div style={{ position: 'absolute', bottom: -10, width: 5, height: 5, borderRadius: '50%', background: 'var(--lime)' }} />
+                <div style={{ position: 'absolute', bottom: -10, width: 16, height: 3, borderRadius: 0, background: 'var(--hi-bg)' }} />
               )}
             </div>
           )

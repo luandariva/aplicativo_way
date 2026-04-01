@@ -4,7 +4,7 @@ import { fetchGamificacaoResumo } from '../lib/gamificacao'
 
 const SPRING = 'cubic-bezier(.34,1.56,.64,1)'
 
-function RingProgress({ pct, size = 60, stroke = 5, color = 'var(--lime)', children }) {
+function RingProgress({ pct, size = 60, stroke = 5, color = 'rgba(255,255,255,0.82)', children }) {
   const r = (size - stroke * 2) / 2
   const circ = 2 * Math.PI * r
   const offset = circ - (pct / 100) * circ
@@ -36,14 +36,14 @@ function DesafioBar({ label, atual, meta, cor, completo }) {
   return (
     <div style={{ marginBottom: 8 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 4 }}>
-        <span style={{ color: ok ? 'var(--lime)' : 'var(--text-2)' }}>
+        <span style={{ color: ok ? 'var(--text)' : 'var(--text-2)' }}>
           {ok ? '✓ ' : ''}{label}
         </span>
         <span style={{ color: 'var(--text-3)' }}>{completo ? `${meta}/${meta}` : `${atual}/${meta}`}</span>
       </div>
       <div style={{ height: 4, background: 'rgba(255,255,255,0.07)', borderRadius: 999, overflow: 'hidden' }}>
         <div style={{
-          width: `${pct}%`, height: '100%', background: ok ? 'var(--lime)' : cor, borderRadius: 999,
+          width: `${pct}%`, height: '100%', background: ok ? 'rgba(255,255,255,0.78)' : cor, borderRadius: 999,
           transition: `width .55s ${SPRING}`,
         }} />
       </div>
@@ -82,13 +82,13 @@ export default function GamifWidget({ onVerConquistas }) {
   if (loading) {
     return (
       <div style={{
-        borderRadius: 16, border: '1px solid var(--border)',
-        background: 'var(--bg-3)', padding: 14, minHeight: 80,
+        borderRadius: 0, border: 'none',
+        background: 'var(--surface-2)', padding: 14, minHeight: 80,
         display: 'flex', alignItems: 'center',
       }}>
         <div style={{
-          width: 16, height: 16, border: '2px solid var(--border)',
-          borderTopColor: 'var(--lime)', borderRadius: '50%',
+          width: 16, height: 16, border: '2px solid rgba(255,255,255,0.12)',
+          borderTopColor: 'var(--primary)', borderRadius: '50%',
           animation: 'spin .7s linear infinite',
         }} />
       </div>
@@ -106,9 +106,8 @@ export default function GamifWidget({ onVerConquistas }) {
   const desafioOk = prog?.completo
 
   return (
-    <div className="resumo-card anim" style={{ 
-      background: 'linear-gradient(145deg, var(--bg-3), var(--bg-4))',
-      padding: 16, border: '1px solid var(--border-2)'
+    <div className="anim plate plate-3 plate-pad" style={{
+      background: 'linear-gradient(145deg, var(--surface-2), var(--surface-3))',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <p style={{ fontSize: 11, color: 'var(--text-3)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>
@@ -118,16 +117,16 @@ export default function GamifWidget({ onVerConquistas }) {
           type="button"
           onClick={onVerConquistas}
           className="tag"
-          style={{ background: 'var(--lime-dim)', color: 'var(--lime)', border: '1px solid var(--lime-border)', fontWeight: 800, cursor: 'pointer' }}
+          style={{ background: 'rgba(255,255,255,0.08)', color: 'var(--text)', border: 'none', fontWeight: 800, cursor: 'pointer' }}
         >
           DETALHES →
         </button>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
-        <RingProgress pct={pctMes} size={68} stroke={6} color="var(--lime)">
+        <RingProgress pct={pctMes} size={68} stroke={6} color="rgba(255,255,255,0.82)">
           <div style={{ textAlign: 'center' }}>
-            <p style={{ fontSize: 18, fontWeight: 900, color: 'var(--lime)', lineHeight: 1, fontFamily: 'var(--font-display)' }}>{pontos}</p>
+            <p style={{ fontSize: 18, fontWeight: 900, color: 'var(--text)', lineHeight: 1, fontFamily: 'var(--font-display)' }}>{pontos}</p>
             <p style={{ fontSize: 9, color: 'var(--text-3)', fontWeight: 700, textTransform: 'uppercase' }}>pts</p>
           </div>
         </RingProgress>
@@ -150,16 +149,16 @@ export default function GamifWidget({ onVerConquistas }) {
 
       {desafio && prog && (
         <div style={{
-          background: desafioOk ? 'var(--lime-dim)' : 'var(--bg-4)',
-          borderRadius: 14, padding: '12px',
-          border: `1px solid ${desafioOk ? 'var(--lime-border)' : 'var(--border)'}`,
+          background: desafioOk ? 'rgba(255,255,255,0.06)' : 'var(--surface-3)',
+          borderRadius: 0, padding: '12px',
+          border: 'none',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-            <p style={{ fontSize: 12, fontWeight: 800, color: desafioOk ? 'var(--lime)' : 'var(--text-2)' }}>
+            <p style={{ fontSize: 12, fontWeight: 800, color: desafioOk ? 'var(--text)' : 'var(--text-2)' }}>
               {desafioOk ? '🏆 DESAFIO CONCLUÍDO!' : (desafio.titulo?.toUpperCase() || 'DESAFIO SEMANAL')}
             </p>
             {!desafioOk && (
-              <span className="tag" style={{ background: 'rgba(239,177,68,0.1)', color: 'var(--amber)', border: '1px solid rgba(239,177,68,0.2)' }}>
+              <span className="tag" style={{ background: 'rgba(255,177,74,0.10)', color: 'var(--amber)', border: 'none' }}>
                 +{desafio.bonus_pontos} PTS
               </span>
             )}
@@ -172,12 +171,12 @@ export default function GamifWidget({ onVerConquistas }) {
 
       <div style={{
         marginTop: 12, display: 'flex', alignItems: 'center', gap: 10,
-        padding: '10px 12px', background: 'rgba(0,0,0,0.2)', borderRadius: 12, border: '1px solid var(--border)'
+        padding: '10px 12px', background: 'rgba(0,0,0,0.18)', borderRadius: 0, border: 'none'
       }}>
         <span style={{ fontSize: 20 }}>{data.ranking_opt_in ? '🏅' : '👻'}</span>
         {data.ranking_opt_in && data.posicao_ranking > 0 ? (
           <p style={{ fontSize: 12, color: 'var(--text-2)', fontWeight: 500 }}>
-            Você está em <span style={{ color: 'var(--lime)', fontWeight: 800 }}>#{data.posicao_ranking}</span> no ranking
+            Você está em <span style={{ color: 'var(--text)', fontWeight: 800 }}>#{data.posicao_ranking}</span> no ranking
           </p>
         ) : (
           <p style={{ fontSize: 11, color: 'var(--text-3)', lineHeight: 1.3 }}>

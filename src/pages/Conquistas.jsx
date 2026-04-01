@@ -11,10 +11,19 @@ function Pill({ children, ativo, onClick, cor }) {
       onClick={onClick}
       className={`pill-btn ${ativo ? 'active' : ''}`}
       style={{
-        background: ativo ? (cor || 'var(--lime)') : 'var(--bg-3)',
-        color: ativo ? '#111' : 'var(--text-2)',
-        padding: '10px 16px', borderRadius: 12, border: '1px solid var(--border)',
-        fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap', transition: 'all .2s'
+        background: ativo ? 'var(--hi-bg)' : 'var(--surface-2)',
+        color: ativo ? 'var(--hi-fg)' : 'var(--text-2)',
+        padding: '10px 16px',
+        borderRadius: 0,
+        border: 'none',
+        fontSize: 11,
+        fontWeight: 800,
+        whiteSpace: 'nowrap',
+        transition: 'all .2s',
+        fontFamily: 'var(--font-display)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.06em',
+        clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
       }}
     >
       {children}
@@ -35,7 +44,7 @@ function BadgeCard({ ub }) {
       <div>
         <p style={{ fontSize: 14, fontWeight: 800 }}>{b?.titulo || 'Conquista'}</p>
         <p style={{ fontSize: 11, color: 'var(--text-3)', lineHeight: 1.4 }}>{b?.descricao || ''}</p>
-        {data && <p style={{ fontSize: 10, color: 'var(--lime)', marginTop: 4, fontWeight: 700 }}>Obtido em {data}</p>}
+        {data && <p style={{ fontSize: 10, color: 'var(--primary)', marginTop: 4, fontWeight: 700 }}>Obtido em {data}</p>}
       </div>
     </div>
   )
@@ -218,33 +227,33 @@ export default function Conquistas({ onVoltar, embeddedInPerfil }) {
               </p>
               <div className="points-grid">
                 {[
-                  { label: 'Atividade', value: pontosAtividade, cor: 'var(--lime)' },
+                  { label: 'Atividade', value: pontosAtividade, cor: 'var(--primary)' },
                   { label: 'Bônus', value: pontosBonus > 0 ? `+${pontosBonus}` : '—', cor: '#efb144' },
-                  { label: 'Total', value: pontosTotal, cor: 'var(--lime)', active: true },
+                  { label: 'Total', value: pontosTotal, cor: 'var(--primary)', active: true },
                 ].map(item => (
                   <div key={item.label} className={`point-card ${item.active ? 'active' : ''}`}>
-                    <span className="point-val" style={{ color: item.active ? 'var(--lime)' : 'var(--text-2)' }}>{item.value}</span>
+                    <span className="point-val" style={{ color: item.active ? 'var(--primary)' : 'var(--text-2)' }}>{item.value}</span>
                     <span className="point-lab">{item.label}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="resumo-card anim" style={{ border: prog?.completo ? '1px solid var(--lime-border)' : '1px solid var(--border)', background: prog?.completo ? 'var(--lime-dim)' : 'var(--bg-3)' }}>
+            <div className="resumo-card anim" style={{ border: 'none', background: prog?.completo ? 'var(--primary-dim)' : 'var(--surface-2)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                <p style={{ fontSize: 14, fontWeight: 800, color: prog?.completo ? 'var(--lime)' : 'var(--text)' }}>
+                <p style={{ fontSize: 14, fontWeight: 800, color: prog?.completo ? 'var(--primary)' : 'var(--text)' }}>
                   {prog?.completo ? '🏆 DESAFIO CONCLUÍDO!' : (desafio?.titulo || 'DESAFIO SEMANAL')}
                 </p>
                 {!prog?.completo && desafio && (
-                  <span className="tag" style={{ background: 'rgba(239,177,68,0.1)', color: '#efb144', border: '1px solid rgba(239,177,68,0.2)' }}>
+                  <span className="tag" style={{ background: 'rgba(239,177,68,0.1)', color: '#efb144', border: 'none' }}>
                     +{desafio.bonus_pontos} PTS
                   </span>
                 )}
               </div>
               {typeof diasComResumo === 'number' && !prog?.completo && (
-                <div style={{ marginBottom: 16, padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid var(--border)' }}>
+                <div style={{ marginBottom: 16, padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: 0, border: 'none' }}>
                   <p style={{ fontSize: 12, color: 'var(--text-3)', lineHeight: 1.5 }}>
-                    <strong style={{ color: 'var(--lime)' }}>{diasComResumo} de 7</strong> dias ativos. Continue assim para completar o desafio!
+                    <strong style={{ color: 'var(--primary)' }}>{diasComResumo} de 7</strong> dias ativos. Continue assim para completar o desafio!
                   </p>
                 </div>
               )}
@@ -260,11 +269,11 @@ export default function Conquistas({ onVoltar, embeddedInPerfil }) {
                     return (
                       <div key={bar.label}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 6, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                          <span style={{ color: ok ? 'var(--lime)' : 'var(--text-2)' }}>{ok ? '✓ ' : ''}{bar.label}</span>
+                          <span style={{ color: ok ? 'var(--primary)' : 'var(--text-2)' }}>{ok ? '✓ ' : ''}{bar.label}</span>
                           <span style={{ color: 'var(--text-3)' }}>{bar.atual}/{bar.meta}</span>
                         </div>
-                        <div style={{ height: 6, background: 'var(--bg-4)', borderRadius: 999, overflow: 'hidden', border: '1px solid var(--border)' }}>
-                          <div style={{ width: `${pct}%`, height: '100%', background: ok ? 'var(--lime)' : bar.cor, borderRadius: 999, transition: 'width .8s cubic-bezier(0.16, 1, 0.3, 1)' }} />
+                        <div style={{ height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 0, overflow: 'hidden', border: 'none' }}>
+                          <div style={{ width: `${pct}%`, height: '100%', background: ok ? 'var(--primary)' : bar.cor, borderRadius: 0, transition: 'width .8s cubic-bezier(0.16, 1, 0.3, 1)' }} />
                         </div>
                       </div>
                     )
@@ -283,10 +292,10 @@ export default function Conquistas({ onVoltar, embeddedInPerfil }) {
               ].map((item, i, arr) => (
                 <div key={item.acao} style={{
                   display: 'flex', justifyContent: 'space-between', padding: '10px 4px',
-                  borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none',
+                  borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none',
                 }}>
                   <span style={{ fontSize: 13, color: 'var(--text-2)', fontWeight: 500 }}>{item.acao}</span>
-                  <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--lime)' }}>{item.pts} PTS</span>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--primary)' }}>{item.pts} PTS</span>
                 </div>
               ))}
             </div>
@@ -306,7 +315,7 @@ export default function Conquistas({ onVoltar, embeddedInPerfil }) {
               </button>
 
               {movimentacoesExpandido && (
-                <div style={{ padding: '0 12px 12px', borderTop: '1px solid var(--border)' }}>
+                <div style={{ padding: '0 12px 12px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
                   <p style={{ fontSize: 11, color: 'var(--text-3)', marginBottom: 12, lineHeight: 1.45, paddingTop: 10 }}>
                     Tudo que somou pontos no mês corrente (registros, macros, treinos e bônus de desafio).
                   </p>
@@ -329,7 +338,7 @@ export default function Conquistas({ onVoltar, embeddedInPerfil }) {
                             gap: 8,
                             alignItems: 'center',
                             padding: '10px 4px',
-                            borderTop: i === 0 ? 'none' : '1px solid var(--border)',
+                            borderTop: i === 0 ? 'none' : '1px solid rgba(255,255,255,0.06)',
                           }}
                         >
                           <span style={{ fontSize: 11, color: 'var(--text-3)', fontWeight: 700 }}>
@@ -338,7 +347,7 @@ export default function Conquistas({ onVoltar, embeddedInPerfil }) {
                           <span style={{ fontSize: 13, color: 'var(--text-2)', fontWeight: 500, lineHeight: 1.35 }}>
                             {item.titulo}
                           </span>
-                          <span style={{ fontSize: 12, fontWeight: 800, color: item.tipo === 'bonus' ? '#efb144' : 'var(--lime)', whiteSpace: 'nowrap' }}>
+                          <span style={{ fontSize: 12, fontWeight: 800, color: item.tipo === 'bonus' ? '#efb144' : 'var(--primary)', whiteSpace: 'nowrap' }}>
                             +{item.pontos} PTS
                           </span>
                         </div>
@@ -355,7 +364,7 @@ export default function Conquistas({ onVoltar, embeddedInPerfil }) {
           <div className="anim">
             {badges.length > 0 && (
               <div style={{ marginBottom: 20 }}>
-                <p style={{ fontSize: 11, color: 'var(--lime)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em', marginBottom: 12 }}>
+                <p style={{ fontSize: 11, color: 'var(--primary)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em', marginBottom: 12 }}>
                   Conquistas Obtidas ({badges.length})
                 </p>
                 <div className="badge-grid">
@@ -395,13 +404,13 @@ export default function Conquistas({ onVoltar, embeddedInPerfil }) {
             ) : (
               <>
                 {resumo?.posicao_ranking > 0 && (
-                  <div className="resumo-card" style={{ background: 'var(--lime-dim)', borderColor: 'var(--lime-border)', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+                  <div className="resumo-card" style={{ background: 'var(--primary-dim)', borderColor: 'transparent', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16, border: 'none' }}>
                     <span style={{ fontSize: 32 }}>
                       {resumo.posicao_ranking === 1 ? '🥇' : resumo.posicao_ranking === 2 ? '🥈' : resumo.posicao_ranking === 3 ? '🥉' : '🏅'}
                     </span>
                     <div>
                       <p style={{ fontSize: 12, color: 'var(--text-3)', fontWeight: 700, textTransform: 'uppercase' }}>Sua Posição</p>
-                      <p style={{ fontSize: 28, fontWeight: 900, fontFamily: 'var(--font-display)', color: 'var(--lime)' }}>
+                      <p style={{ fontSize: 28, fontWeight: 900, fontFamily: 'var(--font-display)', color: 'var(--primary)' }}>
                         #{resumo.posicao_ranking}
                         <span style={{ fontSize: 14, color: 'var(--text-3)', fontWeight: 400 }}> de {resumo.participantes_ranking}</span>
                       </p>
@@ -459,16 +468,16 @@ export default function Conquistas({ onVoltar, embeddedInPerfil }) {
               <button
                 onClick={() => setOptIn(v => !v)}
                 style={{
-                  width: 52, height: 28, borderRadius: 14, position: 'relative',
-                  background: optIn ? 'var(--lime)' : 'var(--bg-4)',
-                  border: '1px solid var(--border)', transition: 'all .3s ease',
+                  width: 52, height: 28, borderRadius: 0, position: 'relative',
+                  background: optIn ? 'rgba(255,255,255,0.12)' : 'var(--surface-3)',
+                  border: 'none', transition: 'all .3s ease',
                   cursor: 'pointer'
                 }}
               >
                 <div style={{
                   position: 'absolute', top: 3, left: optIn ? 26 : 3,
-                  width: 20, height: 20, borderRadius: '50%',
-                  background: optIn ? '#000' : 'var(--text-3)',
+                  width: 20, height: 20, borderRadius: 0,
+                  background: optIn ? 'var(--text)' : 'var(--text-3)',
                   transition: 'all .3s cubic-bezier(0.16, 1, 0.3, 1)'
                 }} />
               </button>

@@ -17,7 +17,7 @@
   font-family: var(--font-display);
   font-size: 32px;
   font-weight: 900;
-  color: var(--lime);
+  color: var(--primary);
 }
 
 .stats-grid {
@@ -48,9 +48,9 @@
   display: flex;
   gap: 8px;
   padding: 4px;
-  background: var(--bg-3);
-  border-radius: 14px;
-  border: 1px solid var(--border);
+  background: var(--surface-2);
+  border-radius: 0;
+  border: none;
   margin-bottom: 4px;
 }
 
@@ -71,8 +71,8 @@
 }
 
 .tab-btn.active {
-  background: var(--bg-4);
-  color: var(--lime);
+  background: var(--surface-3);
+  color: var(--primary);
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
@@ -100,7 +100,7 @@
 .day-line {
   flex: 1;
   height: 1px;
-  background: var(--border);
+  background: rgba(255,255,255,0.06);
 }
 
 .day-count {
@@ -121,16 +121,15 @@
   align-items: center;
   gap: 12px;
   padding: 12px;
-  background: var(--bg-3);
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  background: var(--surface-3);
+  border: none;
+  border-radius: 0;
   text-align: left;
   transition: all .2s;
 }
 
 .hist-item-btn.expanded {
-  border-color: var(--border-2);
-  background: var(--bg-4);
+  background: var(--surface-2);
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
@@ -138,12 +137,13 @@
 .icon-box {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
-  border: 1px solid transparent;
+  border-radius: 0;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
 }
 
 .hist-item-info {
@@ -174,19 +174,19 @@
 .badge-status {
   font-size: 10px;
   font-weight: 800;
-  background: var(--bg-4);
+  background: rgba(255,255,255,0.04);
   padding: 2px 6px;
-  border-radius: 6px;
+  border-radius: 0;
 }
 
-.badge-status.concluido { color: var(--lime); background: var(--lime-dim); }
+.badge-status.concluido { color: var(--primary); background: rgba(243, 255, 202, 0.12); }
 .badge-status.pendente { color: var(--text-3); }
 
 .details-box {
-  background: var(--bg-4);
-  border: 1px solid var(--border-2);
+  background: var(--surface-2);
+  border: none;
   border-top: none;
-  border-radius: 0 0 16px 16px;
+  border-radius: 0;
   padding: 16px;
   margin-top: -10px;
   animation: slideDown .3s ease-out;
@@ -204,7 +204,7 @@
   align-items: center;
   font-size: 13px;
   padding-bottom: 8px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
 .macro-grid {
@@ -234,7 +234,7 @@
 .macro-card {
   background: linear-gradient(180deg, #10141f 0%, #0d111a 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 22px;
+  border-radius: 0;
   padding: 16px 14px;
   margin-bottom: 16px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -286,7 +286,7 @@
 .macro-card-track {
   width: 100%;
   height: 6px;
-  border-radius: 999px;
+  border-radius: 0;
   background: rgba(185, 198, 255, 0.12);
   overflow: hidden;
 }
@@ -326,19 +326,19 @@
 .nav-btn {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
-  background: var(--bg-3);
-  border: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--surface-2);
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   transition: background .15s, border-color .15s;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
 }
 
 .nav-btn:active {
-  background: var(--bg-4);
-  border-color: var(--border-2);
+  background: var(--surface-3);
   transform: scale(0.93);
 }
 

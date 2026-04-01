@@ -10,9 +10,9 @@
 }
 
 .dash-warning, .dash-loading {
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  background: var(--bg-3);
+  border-radius: 0;
+  border: none;
+  background: var(--surface-2);
   padding: 14px;
   font-size: 13px;
 }
@@ -21,11 +21,11 @@
 
 /* Card Premium Resumo */
 .resumo-card {
-  border-radius: 28px;
-  background: var(--bg-3);
+  border-radius: 0;
+  background: var(--surface-3);
   padding: 24px;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
+  box-shadow: var(--shadow-float);
+  border: none;
   position: relative;
   overflow: hidden;
 }
@@ -37,7 +37,7 @@
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: radial-gradient(circle, var(--lime-dim) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(243, 255, 202, 0.12) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -57,8 +57,8 @@
 .resumo-title-bar {
   width: 4px;
   height: 22px;
-  border-radius: 4px;
-  background: linear-gradient(to bottom, var(--lime), #dbff70);
+  border-radius: 0;
+  background: rgba(255,255,255,0.38);
 }
 
 .resumo-title {
@@ -71,27 +71,27 @@
 }
 
 .resumo-badge {
-  background: var(--lime-dim);
-  color: var(--lime);
+  background: rgba(243, 255, 202, 0.12);
+  color: var(--primary);
   padding: 5px 14px;
-  border-radius: 20px;
+  border-radius: 0;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.8px;
   text-transform: uppercase;
-  border: 1px solid var(--lime-border);
+  border: none;
 }
 
 .ring-card {
   flex: 1;
   background: rgba(255,255,255,0.025);
-  border-radius: 22px;
+  border-radius: 0;
   padding: 20px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  border: 1px solid rgba(255,255,255,0.04);
+  border: none;
   cursor: pointer;
   transition: transform .18s ease, box-shadow .18s ease;
 }
@@ -102,12 +102,12 @@
 .action-card {
   flex: 1;
   background: rgba(255,255,255,0.025);
-  border-radius: 18px;
+  border-radius: 0;
   padding: 16px 14px;
   display: flex;
   align-items: center;
   gap: 12px;
-  border: 1px solid rgba(255,255,255,0.04);
+  border: none;
   cursor: pointer;
   transition: transform .18s ease, box-shadow .18s ease;
 }
@@ -118,7 +118,7 @@
 .action-icon {
   width: 42px;
   height: 42px;
-  border-radius: 14px;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -129,11 +129,11 @@
 
 /* Desafio Card */
 .desafio-card {
-  border-radius: 22px;
+  border-radius: 0;
   background: linear-gradient(160deg, rgba(17,19,22,0.95), rgba(13,16,19,0.95));
   padding: 0 0 2px;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border-2);
+  box-shadow: var(--shadow-float);
+  border: none;
   overflow: hidden;
   position: relative;
 }
@@ -153,9 +153,9 @@
 .desafio-title-mark {
   width: 4px;
   height: 20px;
-  border-radius: 6px;
-  background: var(--lime);
-  box-shadow: 0 0 16px rgba(201, 242, 77, 0.35);
+  border-radius: 0;
+  background: var(--primary);
+  box-shadow: 0 0 20px rgba(255,255,255,0.06);
 }
 .desafio-title {
   margin: 0;
@@ -166,7 +166,7 @@
   letter-spacing: -0.2px;
 }
 .desafio-badge {
-  border: 1px solid var(--lime-border);
+  border: none;
 }
 .desafio-main {
   display: flex;
@@ -176,10 +176,10 @@
 .desafio-icon {
   width: 56px;
   height: 56px;
-  border-radius: 16px;
+  border-radius: 0;
   background: linear-gradient(135deg, rgba(201,242,77,0.16), rgba(201,242,77,0.05));
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  border: 1px solid var(--lime-border);
+  border: none;
 }
 .desafio-content {
   flex: 1;
@@ -214,10 +214,10 @@
 }
 .desafio-stat {
   flex: 1;
-  background: var(--bg-3);
-  border-radius: 12px;
+  background: var(--surface-2);
+  border-radius: 0;
   padding: 12px 10px;
-  border: 1px solid var(--border);
+  border: none;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -230,7 +230,7 @@
   margin-top: 16px;
   width: 100%;
   padding: 13px 16px;
-  border-radius: 14px;
+  border-radius: 0;
   color: #091007;
   font-size: 14px;
   font-weight: 800;

@@ -31,9 +31,8 @@ export default function StreakWidget() {
   if (loading) {
     return (
       <div style={{
-        borderRadius: 'var(--radius)',
-        background: 'var(--bg-3)',
-        border: '1px solid var(--border)',
+        borderRadius: 0,
+        background: 'var(--surface-2)',
         padding: '16px 18px',
         minHeight: 70,
         display: 'flex',
@@ -49,31 +48,29 @@ export default function StreakWidget() {
   const streakAtivo = streak > 0 || hojeAtivo
   const emRisco = streak > 0 && !hojeAtivo
 
-  const corPrincipal = emRisco ? 'var(--amber)' : streakAtivo ? 'var(--lime)' : 'var(--text-3)'
-  const bgGlow = emRisco ? 'rgba(240, 168, 75, 0.08)' : streakAtivo ? 'rgba(201, 242, 77, 0.06)' : 'transparent'
-  const borderGlow = emRisco ? 'rgba(240, 168, 75, 0.3)' : streakAtivo ? 'rgba(201, 242, 77, 0.2)' : 'var(--border)'
+  const corPrincipal = emRisco ? 'var(--amber)' : streakAtivo ? 'var(--text)' : 'var(--text-3)'
+  const bgGlow = emRisco ? 'rgba(255, 177, 74, 0.08)' : streakAtivo ? 'rgba(243, 255, 202, 0.06)' : 'transparent'
 
   return (
     <div style={{
-      borderRadius: 'var(--radius)',
-      background: `linear-gradient(145deg, var(--bg-3), ${bgGlow})`,
-      border: `1px solid ${borderGlow}`,
+      borderRadius: 0,
+      background: `linear-gradient(145deg, var(--surface-2), ${bgGlow})`,
       padding: '16px 18px',
       animation: 'floatIn .45s ease .06s both',
-      boxShadow: streakAtivo ? `0 4px 24px ${emRisco ? 'rgba(240,168,75,0.1)' : 'rgba(201,242,77,0.08)'}` : 'none',
+      boxShadow: streakAtivo ? `0 18px 42px rgba(0,0,0,0.55)` : 'none',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
         <div style={{
           width: 56, height: 56,
-          borderRadius: 'var(--radius)',
+          borderRadius: 0,
           background: emRisco
-            ? 'var(--bg-4)'
+            ? 'var(--surface-3)'
             : streakAtivo
-              ? 'var(--lime-dim)'
-              : 'rgba(255,255,255,0.04)',
-          border: `1.5px solid ${emRisco ? 'var(--amber)' : streakAtivo ? 'var(--lime-border)' : 'var(--border)'}`,
+              ? 'rgba(243, 255, 202, 0.12)'
+              : 'rgba(255,255,255,0.03)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
           animation: streakAtivo && !emRisco ? 'glowPulse 2.5s ease-in-out infinite' : 'none',
+          clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
         }}>
           <FireIcon ativo={streakAtivo} size={28} />
         </div>
@@ -86,7 +83,7 @@ export default function StreakWidget() {
             }}>
               {streak}
             </span>
-            <span style={{ fontSize: 13, fontWeight: 600, color: corPrincipal, opacity: 0.7 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: corPrincipal, opacity: 0.75, fontFamily: 'var(--font-tech)', letterSpacing: '0.16em', textTransform: 'uppercase' }}>
               {streak === 1 ? 'dia' : 'dias'}
             </span>
           </div>
@@ -101,7 +98,7 @@ export default function StreakWidget() {
 
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        marginTop: 14, padding: '10px 4px', background: 'rgba(255,255,255,0.025)', borderRadius: 'var(--radius)',
+        marginTop: 14, padding: '10px 4px', background: 'rgba(255,255,255,0.02)', borderRadius: 0,
       }}>
         {diasAtivosNaSemana.map((ativo, i) => {
           const ehHoje = (() => {
@@ -117,11 +114,12 @@ export default function StreakWidget() {
                 {DIAS_SEMANA[i]}
               </span>
               <div style={{
-                width: ehHoje ? 22 : 18, height: ehHoje ? 22 : 18, borderRadius: '50%',
-                background: ativo ? 'var(--lime)' : ehHoje ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)',
-                border: ehHoje && !ativo ? '1.5px dashed rgba(255,255,255,0.2)' : ativo ? '1.5px solid rgba(201,242,77,0.5)' : '1px solid rgba(255,255,255,0.06)',
+                width: ehHoje ? 22 : 18, height: ehHoje ? 22 : 18, borderRadius: 0,
+                background: ativo ? 'rgba(255,255,255,0.10)' : ehHoje ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)',
+                border: 'none',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s ease',
-                boxShadow: ativo ? '0 0 8px rgba(201,242,77,0.3)' : 'none',
+                boxShadow: ativo ? '0 0 16px rgba(255,255,255,0.06)' : 'none',
+                clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))',
               }}>
                 {ativo && (
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
@@ -136,19 +134,20 @@ export default function StreakWidget() {
 
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        marginTop: 10, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.05)',
+        marginTop: 12, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.05)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{
-            width: 18, height: 18, borderRadius: '50%',
-            background: hojeAtivo ? 'var(--lime)' : 'rgba(255,255,255,0.06)',
-            border: hojeAtivo ? 'none' : '1px dashed rgba(255,255,255,0.15)',
+            width: 18, height: 18, borderRadius: 0,
+            background: hojeAtivo ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.04)',
+            border: 'none',
             display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10,
-            color: '#000'
+            color: hojeAtivo ? 'var(--text)' : 'transparent',
+            clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))',
           }}>
             {hojeAtivo ? '✓' : ''}
           </span>
-          <span style={{ fontSize: 11, color: hojeAtivo ? 'var(--lime)' : 'var(--text-3)', fontWeight: hojeAtivo ? 600 : 400 }}>
+          <span style={{ fontSize: 11, color: hojeAtivo ? 'var(--text)' : 'var(--text-3)', fontWeight: hojeAtivo ? 600 : 400 }}>
             {hojeAtivo ? 'Hoje registrado' : 'Hoje pendente'}
           </span>
         </div>
@@ -157,7 +156,7 @@ export default function StreakWidget() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <span style={{ fontSize: 11, color: 'var(--text-3)' }}>Recorde:</span>
             <span style={{
-              fontSize: 12, fontWeight: 800, color: streak >= recordeStreak ? 'var(--lime)' : 'var(--text-2)',
+              fontSize: 12, fontWeight: 800, color: streak >= recordeStreak ? 'var(--text)' : 'var(--text-2)',
               fontFamily: 'var(--font-display)',
             }}>
               {recordeStreak}

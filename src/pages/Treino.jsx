@@ -106,7 +106,7 @@ function ExercicioVideoDemo({ url }) {
   const wrap = {
     position: 'relative',
     width: '100%',
-    borderRadius: 12,
+    borderRadius: 0,
     overflow: 'hidden',
     background: '#0a0a0a',
     aspectRatio: '16 / 9',
@@ -151,14 +151,17 @@ function ExercicioVideoDemo({ url }) {
         display: 'block',
         marginBottom: 12,
         padding: '12px 14px',
-        borderRadius: 12,
-        background: 'var(--bg-4)',
-        border: '1px solid var(--border)',
-        color: 'var(--lime)',
+        borderRadius: 0,
+        background: 'var(--surface-3)',
+        border: 'none',
+        color: 'var(--primary)',
         fontWeight: 700,
         fontSize: 13,
         textAlign: 'center',
         textDecoration: 'none',
+        fontFamily: 'var(--font-tech)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.06em',
       }}
     >
       Abrir video do exercicio
@@ -441,12 +444,13 @@ function novoExercicioBuilder() {
 function SerieButton({ numero, feita, onClick }) {
   return (
     <button onClick={onClick} className={`serie-btn ${feita ? 'feita' : ''}`} style={{
-      width: 40, height: 40, borderRadius: '50%',
-      background: feita ? 'var(--lime)' : 'var(--bg-4)',
-      border: `1px solid ${feita ? 'transparent' : 'var(--border)'}`,
-      color: feita ? '#121212' : 'var(--text-3)',
+      width: 40, height: 40, borderRadius: 0,
+      background: feita ? 'rgba(255,255,255,0.10)' : 'var(--surface-3)',
+      border: 'none',
+      color: feita ? 'var(--text)' : 'var(--text-3)',
       fontSize: 13, fontWeight: 700, display: 'flex',
       alignItems: 'center', justifyContent: 'center', transition: 'all .2s',
+      clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))',
     }}>
       {feita ? '✓' : numero}
     </button>
@@ -459,9 +463,9 @@ function ExercicioCard({ ex, index, onToggleSerie, onToggleConcluido, expandido,
 
   return (
     <div style={{
-      background: ex.concluido ? 'rgba(201,242,77,0.09)' : 'var(--bg-3)',
-      border: `1px solid ${ex.concluido ? 'var(--border-2)' : 'var(--border)'}`,
-      borderRadius: 16, overflow: 'hidden', transition: 'all .25s',
+      background: ex.concluido ? 'rgba(243, 255, 202, 0.08)' : 'var(--surface-3)',
+      border: 'none',
+      borderRadius: 0, overflow: 'hidden', transition: 'all .25s',
       flexShrink: 0,
       animation: `fadeUp .3s ease ${index * 0.06}s both`,
     }}>
@@ -473,10 +477,11 @@ function ExercicioCard({ ex, index, onToggleSerie, onToggleConcluido, expandido,
         }}
       >
         <div style={{
-          width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-          background: ex.concluido ? 'var(--lime)' : 'var(--bg-4)',
+          width: 36, height: 36, borderRadius: 0, flexShrink: 0,
+          background: ex.concluido ? 'rgba(255,255,255,0.10)' : 'var(--surface-2)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: ex.concluido ? '#111' : 'var(--text-2)', fontWeight: 700,
+          color: ex.concluido ? 'var(--text)' : 'var(--text-2)', fontWeight: 800,
+          clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))',
         }}>
           {ex.concluido ? '✓' : index + 1}
         </div>
@@ -489,20 +494,20 @@ function ExercicioCard({ ex, index, onToggleSerie, onToggleConcluido, expandido,
           }}>
             {ex.nome}
           </p>
-          <p style={{ color: 'var(--text-3)', fontSize: 12 }}>
+          <p style={{ color: 'var(--text-3)', fontSize: 11, fontFamily: 'var(--font-tech)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
             {ex.series}x{ex.repeticoes > 0 ? ex.repeticoes : 'falha'} {ex.carga > 0 ? `• ${ex.carga}kg` : ''} • {totalFeitas}/{ex.series}
           </p>
         </div>
         <span style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-3)', flexShrink: 0 }}>
           {ex.video_url ? (
-            <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--lime)' }} title="Tem video">▶</span>
+            <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--primary)' }} title="Tem video">▶</span>
           ) : null}
           <span>{expandido ? '▴' : '▾'}</span>
         </span>
       </button>
 
       <div style={{ height: 3, background: 'rgba(255,255,255,0.06)', margin: '0 14px' }}>
-        <div style={{ height: '100%', width: `${progresso}%`, background: 'var(--lime)', transition: 'width .3s ease' }} />
+        <div style={{ height: '100%', width: `${progresso}%`, background: 'var(--primary)', transition: 'width .3s ease' }} />
       </div>
 
       {expandido && (
@@ -534,10 +539,13 @@ function ExercicioCard({ ex, index, onToggleSerie, onToggleConcluido, expandido,
           <button
             onClick={() => onToggleConcluido(ex.id)}
             style={{
-              width: '100%', padding: '12px', borderRadius: 12, fontWeight: 700,
-              background: ex.concluido ? 'var(--bg-4)' : 'var(--lime)',
-              color: ex.concluido ? 'var(--text-2)' : '#111',
-              border: `1px solid ${ex.concluido ? 'var(--border)' : 'transparent'}`,
+              width: '100%', padding: '14px', borderRadius: 0, fontWeight: 800,
+              background: ex.concluido ? 'var(--surface-2)' : 'rgba(255,255,255,0.10)',
+              color: ex.concluido ? 'var(--text-2)' : 'var(--text)',
+              border: 'none',
+              fontFamily: 'var(--font-display)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
             }}
           >
             {ex.concluido ? 'Desmarcar' : 'Marcar como feito'}
@@ -1046,7 +1054,7 @@ export default function Treino() {
               </div>
 
               {builderMensagem.texto && (
-                <p style={{ fontSize: 11, textAlign: 'center', color: builderMensagem.tipo === 'erro' ? 'var(--red)' : 'var(--lime)', fontWeight: 700 }}>
+                <p style={{ fontSize: 11, textAlign: 'center', color: builderMensagem.tipo === 'erro' ? 'var(--red)' : 'var(--primary)', fontWeight: 700 }}>
                   {builderMensagem.texto}
                 </p>
               )}
@@ -1167,13 +1175,14 @@ export default function Treino() {
         flexDirection: 'column', padding: 28, textAlign: 'center',
       }}>
         <div style={{
-          width: 84, height: 84, borderRadius: '50%', background: 'var(--lime)',
-          color: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 36, marginBottom: 16, boxShadow: 'var(--shadow-glow)',
+          width: 84, height: 84, borderRadius: 0, background: 'rgba(255,255,255,0.10)',
+          color: 'var(--text)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 36, marginBottom: 16, boxShadow: '0 18px 44px rgba(0,0,0,0.55)',
+          clipPath: 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))',
         }}>
           ✓
         </div>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 30, marginBottom: 8 }}>Treino concluido!</h2>
+        <h2 className="display" style={{ fontSize: 34, marginBottom: 8 }}>Treino concluído</h2>
         <p style={{ color: 'var(--text-2)', marginBottom: 20 }}>
           Saldo atualizado e envio para WhatsApp em andamento.
         </p>
@@ -1196,7 +1205,7 @@ export default function Treino() {
         <div
           className="resumo-card treino-detail-hero"
           style={{
-            backgroundImage: `linear-gradient(0deg, var(--bg-3), rgba(0,0,0,0.25)), url(${treino.thumb || THUMB_PERSONALIZADO})`,
+            backgroundImage: `linear-gradient(0deg, var(--surface-2), rgba(0,0,0,0.25)), url(${treino.thumb || THUMB_PERSONALIZADO})`,
           }}
         >
           <div className="treino-detail-hero-head">
@@ -1207,7 +1216,7 @@ export default function Treino() {
             >
               ←
             </button>
-            <span className="tag" style={{ background: 'var(--lime)', color: '#000', fontWeight: 800 }}>
+            <span className="tag" style={{ background: 'rgba(255,255,255,0.10)', color: 'var(--text)', fontWeight: 800 }}>
               {concluidos}/{totalExercicios} EXS
             </span>
           </div>
@@ -1220,7 +1229,7 @@ export default function Treino() {
         </div>
 
         <div className="treino-detail-progress-wrap">
-          <div style={{ height: '100%', width: `${progresso}%`, background: 'var(--lime)', transition: 'width .6s cubic-bezier(0.16, 1, 0.3, 1)', boxShadow: '0 0 10px var(--lime-dim)' }} />
+          <div style={{ height: '100%', width: `${progresso}%`, background: 'rgba(255,255,255,0.62)', transition: 'width .6s cubic-bezier(0.16, 1, 0.3, 1)', boxShadow: '0 0 10px rgba(255,255,255,0.06)' }} />
         </div>
       </div>
 

@@ -190,10 +190,10 @@ export default function Dashboard() {
         const treinoKcalOffset = circumference * (1 - treinoKcalPct)
 
         const treinoStatus = treinoFoiConcluidoHoje
-          ? { label: 'Concluído', color: 'var(--lime)', bg: 'rgba(75,240,122,0.12)' }
+          ? { label: 'Concluído', color: 'var(--primary)', bg: 'rgba(83,255,138,0.12)' }
           : treinoHoje
             ? { label: 'Pendente', color: 'var(--amber)', bg: 'rgba(240,168,75,0.12)' }
-            : { label: 'Descanso', color: 'var(--text-3)', bg: 'var(--bg-3)' }
+            : { label: 'Descanso', color: 'var(--text-3)', bg: 'var(--surface-2)' }
 
         return (
           <div className="resumo-card anim-2">
@@ -266,26 +266,26 @@ export default function Dashboard() {
             <div style={{ display: 'flex', gap: 12 }}>
               <div className="action-card cardio" onClick={() => navigate('/treino')}>
                 <div className="action-icon cardio-bg">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--lime)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="m14.4 14.4 5.6 5.6" /><path d="M22 14.8v3.4c0 .8-.5 1.5-1.2 1.7l-1.3.4c-.6.2-1.3-.2-1.5-.8L18 19" /><path d="M10.8 19.2l-5.6-5.6" /><path d="M2.8 5.6 2 4.2c-.2-.6.2-1.3.8-1.5l1.3-.4c.8-.2 1.5.3 1.7 1.1L6 4.6" /><path d="m13.8 13.8 2-2" /><path d="m10.2 10.2-2 2" /><path d="m6.6 6.6-2 2" /><path d="m17.4 17.4-2 2" /><path d="M13 13 5 5" /><path d="m19 19-8-8" /><path d="M7.4 7.4 6 6c-.8-.8-.8-2 0-2.8s2-.8 2.8 0l1.4 1.4" /><path d="m16.6 16.6 1.4 1.4c.8.8.8 2 0 2.8s-2 .8-2.8 0l-1.4-1.4" />
                   </svg>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
                   <span style={{ color: '#fff', fontSize: 13, fontWeight: 700 }}>Treino</span>
-                  <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 700, color: treinoStatus.color, background: treinoStatus.bg, padding: '2px 8px', borderRadius: 8, width: 'fit-content', letterSpacing: 0.3 }}>{treinoStatus.label}</span>
+                  <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 700, color: treinoStatus.color, background: treinoStatus.bg, padding: '2px 8px', borderRadius: 0, width: 'fit-content', letterSpacing: 0.3, fontFamily: 'var(--font-tech)', textTransform: 'uppercase' }}>{treinoStatus.label}</span>
                 </div>
               </div>
 
               <div className="action-card meals" onClick={() => navigate('/nutricao')}>
                 <div className="action-icon meals-bg">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--lime)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M18 8h1a4 4 0 0 1 0 8h-1" /><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" /><line x1="6" y1="1" x2="6" y2="4" /><line x1="10" y1="1" x2="10" y2="4" /><line x1="14" y1="1" x2="14" y2="4" />
                   </svg>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <span style={{ color: '#fff', fontSize: 13, fontWeight: 700 }}>Refeições</span>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                    <span style={{ color: 'var(--lime)', fontSize: 20, fontFamily: 'var(--font-display)', fontWeight: 800, lineHeight: 1 }}>{resumoRefeicoes.total}</span>
+                    <span style={{ color: 'var(--primary)', fontSize: 20, fontFamily: 'var(--font-display)', fontWeight: 800, lineHeight: 1 }}>{resumoRefeicoes.total}</span>
                     <span style={{ color: 'var(--text-3)', fontSize: 11, fontWeight: 500 }}>registradas</span>
                   </div>
                 </div>
@@ -308,7 +308,7 @@ export default function Dashboard() {
 
           <div className="desafio-main">
             <div className="desafio-icon">
-              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--lime)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="17" cy="4" r="2" />
                 <path d="M15.5 7.5 12 10l-3 2.5" />
                 <path d="m7 16 3-3 2.5 1.5L16 11" />

@@ -36,14 +36,13 @@ export default function BottomNav() {
   return (
     <nav style={{
       position: 'fixed', bottom: 0, left: 0, right: 0,
-      background: 'rgba(11, 12, 14, 0.98)',
-      backdropFilter: 'blur(10px)',
-      borderTop: '1px solid var(--border-2)',
+      background: 'var(--glass)',
+      backdropFilter: 'blur(var(--glass-blur))',
       display: 'flex',
       alignItems: 'flex-end',
       padding: '8px 10px calc(8px + var(--safe-bottom))',
       zIndex: 120,
-      boxShadow: '0 -8px 32px rgba(0,0,0,0.45)',
+      boxShadow: '0 -18px 42px rgba(0,0,0,0.55)',
     }}>
       {tabs.map((tab, index) => {
         const active = location.pathname === tab.path
@@ -52,19 +51,21 @@ export default function BottomNav() {
           <button key={tab.path} onClick={() => navigate(tab.path)} style={{
             flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
             gap: 4, padding: isCenter ? '0' : '6px 0 4px',
-            background: 'none', color: active ? 'var(--lime)' : 'var(--text-3)',
+            background: 'none', color: active ? 'var(--text)' : 'var(--text-3)',
             transition: 'all .2s',
             position: 'relative',
           }}>
             {isCenter ? (
               <>
                 <div style={{
-                  width: 54, height: 54, borderRadius: '50%', marginTop: -24,
-                  background: active ? '#dbff70' : 'var(--lime)',
-                  color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: active ? '0 0 0 3px rgba(201,242,77,0.3)' : 'none',
+                  width: 56, height: 56, borderRadius: 0, marginTop: -26,
+                  background: active ? 'var(--hi-bg)' : 'var(--surface-3)',
+                  color: active ? 'var(--hi-fg)' : 'var(--text-2)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: active ? '0 18px 44px rgba(0,0,0,0.55)' : 'none',
                   transform: active ? 'scale(1.05)' : 'scale(1)',
                   transition: 'transform 0.2s, box-shadow 0.2s',
+                  clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
                 }}>
                   {tab.icon}
                 </div>
@@ -85,7 +86,7 @@ export default function BottomNav() {
             {active && !isCenter && (
               <div style={{
                 position: 'absolute', top: -8, width: 28, height: 3,
-                background: 'var(--lime)', borderRadius: 999,
+                background: 'var(--hi-bg)', borderRadius: 0,
               }}/>
             )}
           </button>

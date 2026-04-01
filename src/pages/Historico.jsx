@@ -91,7 +91,7 @@ function getPeriodRange(periodo, offset) {
 }
 
 /* ─── Icons ─── */
-function DumbbellIcon({ size = 18, color = 'var(--lime)' }) {
+function DumbbellIcon({ size = 18, color = 'var(--primary)' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="m14.4 14.4 5.6 5.6" /><path d="M22 14.8v3.4c0 .8-.5 1.5-1.2 1.7l-1.3.4c-.6.2-1.3-.2-1.5-.8L18 19" />
@@ -333,13 +333,13 @@ export default function Historico() {
 
   const statItems = periodo === 'dia'
     ? [
-        { label: 'Treinos', value: stats.trTotal, color: 'var(--lime)' },
+        { label: 'Treinos', value: stats.trTotal, color: 'var(--primary)' },
         { label: 'Refeições', value: stats.refTotal, color: 'var(--amber)' },
         { label: 'Kcal', value: kcalFormatted, color: 'var(--red)' },
         { label: 'Itens', value: filteredByPeriod.length, color: 'var(--blue)' },
       ]
     : [
-        { label: 'Treinos', value: stats.trTotal, color: 'var(--lime)' },
+        { label: 'Treinos', value: stats.trTotal, color: 'var(--primary)' },
         { label: 'Refeições', value: stats.refTotal, color: 'var(--amber)' },
         { label: 'Kcal', value: kcalFormatted, color: 'var(--red)' },
         { label: 'Dias', value: stats.diasAtivos, color: 'var(--blue)' },
@@ -411,9 +411,9 @@ export default function Historico() {
             </div>
           ))}
         </div>
-        <div style={{ marginTop: 12, borderTop: '1px solid var(--border)', paddingTop: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ marginTop: 12, paddingTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', paddingLeft: 10, paddingRight: 10 }}>
           <span style={{ fontSize: 11, color: 'var(--text-3)', fontWeight: 700, textTransform: 'uppercase' }}>Gasto no treino</span>
-          <strong style={{ fontSize: 14, color: 'var(--lime)' }}>{gastoTreinoFormatted} kcal</strong>
+          <strong style={{ fontSize: 14, color: 'var(--primary)' }}>{gastoTreinoFormatted} kcal</strong>
         </div>
       </div>
 
@@ -482,7 +482,7 @@ export default function Historico() {
             {group.items.map((item) => {
               const isExpanded = expandedId === item.id
               const isTreino = item.type === 'treino'
-              const accentColor = isTreino ? 'var(--lime)' : 'var(--amber)'
+              const accentColor = isTreino ? 'var(--primary)' : 'var(--amber)'
 
               return (
                 <div key={item.id}>
@@ -491,7 +491,7 @@ export default function Historico() {
                     onClick={() => toggleExpand(item.id)}
                     className={`hist-item-btn ${isExpanded ? 'expanded' : ''}`}
                   >
-                    <div className="icon-box" style={{ background: isTreino ? 'var(--lime-dim)' : 'rgba(255,145,77,0.1)', borderColor: isTreino ? 'var(--lime-border)' : 'rgba(255,145,77,0.2)' }}>
+                    <div className="icon-box" style={{ background: isTreino ? 'var(--primary-dim)' : 'rgba(255,145,77,0.1)', borderColor: 'transparent' }}>
                       {isTreino ? <DumbbellIcon size={20} color={accentColor} /> : <MealIcon size={20} color={accentColor} />}
                     </div>
 
@@ -501,7 +501,7 @@ export default function Historico() {
                         <span>{formatTime(item.data)}</span>
                         {isTreino ? (
                           <>
-                            {item.kcalGastas > 0 && <span style={{ color: 'var(--lime)', fontWeight: 700 }}>{item.kcalGastas} kcal</span>}
+                            {item.kcalGastas > 0 && <span style={{ color: 'var(--primary)', fontWeight: 700 }}>{item.kcalGastas} kcal</span>}
                             <span className={`badge-status ${item.concluido ? 'concluido' : 'pendente'}`}>
                               {item.concluido ? '✓ OK' : '○ PENDENTE'}
                             </span>
@@ -520,9 +520,9 @@ export default function Historico() {
                       {isTreino ? (
                         <div className="anim">
                           <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
-                            {item.categoria && <span className="tag" style={{ background: 'var(--lime-dim)', color: 'var(--lime)', border: '1px solid var(--lime-border)' }}>{item.categoria}</span>}
+                            {item.categoria && <span className="tag" style={{ background: 'rgba(243, 255, 202, 0.12)', color: 'var(--primary)', border: 'none' }}>{item.categoria}</span>}
                             {item.duracao && <span className="tag">{item.duracao} min</span>}
-                            {item.kcalGastas > 0 && <span className="tag" style={{ color: 'var(--lime)', border: '1px solid var(--lime-border)' }}>{item.kcalGastas} kcal gastas</span>}
+                            {item.kcalGastas > 0 && <span className="tag" style={{ color: 'var(--primary)', border: 'none', background: 'rgba(243,255,202,0.10)' }}>{item.kcalGastas} kcal gastas</span>}
                             <span className="tag">{item.exercicios.length} exs</span>
                           </div>
 
@@ -558,7 +558,7 @@ export default function Historico() {
                           />
 
                           {item.observacoes && (
-                            <div className="input-field" style={{ padding: 12, borderRadius: 12, background: 'var(--bg-3)', opacity: 0.8 }}>
+                            <div className="input-field" style={{ padding: 12, borderRadius: 0, background: 'var(--surface-2)', opacity: 0.92 }}>
                               <p style={{ fontSize: 11, color: 'var(--text-3)', marginBottom: 4, fontWeight: 700 }}>OBSERVAÇÕES</p>
                               <p style={{ fontSize: 12, color: 'var(--text-2)', lineHeight: 1.5 }}>{item.observacoes}</p>
                             </div>

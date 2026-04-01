@@ -17,28 +17,22 @@ export default function Login() {
   }
 
   return (
-    <div style={{
-      minHeight: '100dvh', display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center',
-      padding: '24px', background: 'var(--bg)',
-    }}>
-      <div className="anim" style={{ width: '100%', maxWidth: 360 }}>
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <div style={{
-            width: 56, height: 56, border: '1px solid var(--lime-border)',
-            borderRadius: 'var(--radius)', background: 'var(--lime-dim)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 16px', fontSize: 28
-          }}>🥗</div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 800, letterSpacing: '-0.5px' }}>
+    <div className="page" style={{ justifyContent: 'center', paddingTop: 'calc(var(--safe-top) + 24px)' }}>
+      <div className="anim" style={{ width: '100%', maxWidth: 420, margin: '0 auto' }}>
+        <div style={{ marginBottom: 24 }}>
+          <p className="overline">Acesso</p>
+          <h1 className="display" style={{ fontSize: 40, marginTop: 6 }}>
             Alimenta Aí
           </h1>
-          <p style={{ color: 'var(--text-2)', fontSize: 14, marginTop: 6 }}>
-            Seu treino e nutrição em um lugar
+          <p style={{ color: 'var(--text-2)', fontSize: 14, marginTop: 8, maxWidth: 320, lineHeight: 1.45 }}>
+            Treino e nutrição com precisão. Sem distrações.
           </p>
         </div>
 
-        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div className="plate plate-3 plate-pad-lg" style={{
+          background: 'linear-gradient(145deg, var(--surface-2), var(--surface-3))',
+        }}>
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div className="field">
             <label>Email</label>
             <input
@@ -57,17 +51,25 @@ export default function Login() {
 
           {error && (
             <div style={{
-              background: 'rgba(240,91,91,0.1)', border: '1px solid rgba(240,91,91,0.2)',
-              borderRadius: 'var(--radius)', padding: '10px 14px', fontSize: 13, color: 'var(--red)'
+              background: 'rgba(255,90,95,0.12)',
+              border: 'none',
+              borderRadius: 0,
+              padding: '12px 14px',
+              fontSize: 12,
+              color: 'var(--red)',
+              fontFamily: 'var(--font-tech)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
             }}>{error}</div>
           )}
 
           <button type="submit" className="btn btn-primary" disabled={loading} style={{
-            marginTop: 8, padding: '16px', fontSize: 15,
+            marginTop: 8, padding: '18px', fontSize: 12,
           }}>
             {loading ? 'Entrando...' : 'Entrar'}
           </button>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   )

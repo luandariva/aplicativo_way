@@ -183,7 +183,7 @@ export function Nutricao() {
           ←
         </button>
         <div style={{ flex: 1, textAlign: 'center' }}>
-          <span className="tag" style={{ background: 'var(--bg-3)', color: 'var(--lime)', fontSize: 13, padding: '10px 20px', borderRadius: 14 }}>
+          <span className="tag" style={{ background: 'var(--surface-2)', color: 'var(--primary)', fontSize: 12, padding: '10px 18px', borderRadius: 0, border: 'none' }}>
             {diaSelecionadoLabel}
           </span>
         </div>
@@ -225,7 +225,7 @@ export function Nutricao() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
           {[
             { label: 'META', value: resumo.kcalMeta || '—', color: '#fff' },
-            { label: 'CALORIAS', value: resumo.consumidoKcal, color: 'var(--lime)' },
+            { label: 'CALORIAS', value: resumo.consumidoKcal, color: 'var(--primary)' },
             { label: 'PROTEÍNA', value: `${resumo.proteinaAtual}g`, color: 'var(--blue)' },
             { label: 'SALDO', value: resumo.saldoKcal, color: 'var(--amber)' },
           ].map(item => (
@@ -241,7 +241,7 @@ export function Nutricao() {
         <h2 style={{ fontSize: 18, fontWeight: 900, marginBottom: 16, fontFamily: 'var(--font-display)' }}>MACRO NUTRIENTES</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {[
-            { nome: 'Calorias', atual: resumo.consumidoKcal, meta: resumo.kcalMeta, cor: 'var(--lime)', unidade: 'kcal' },
+            { nome: 'Calorias', atual: resumo.consumidoKcal, meta: resumo.kcalMeta, cor: 'var(--primary)', unidade: 'kcal' },
             { nome: 'Proteína', atual: resumo.proteinaAtual, meta: resumo.proteinaMeta, cor: 'var(--blue)', unidade: 'g' },
             { nome: 'Carboidrato', atual: resumo.carboAtual, meta: resumo.carboMeta, cor: 'var(--amber)', unidade: 'g' },
             { nome: 'Gordura', atual: resumo.gorduraAtual, meta: resumo.gorduraMeta, cor: 'var(--purple)', unidade: 'g' },
@@ -276,9 +276,9 @@ export function Nutricao() {
                 <p>{r.kcal}</p>
               </div>
               <span className="tag" style={{ 
-                background: r.status === 'Registrada' ? 'var(--lime-dim)' : 'var(--bg-4)', 
-                color: r.status === 'Registrada' ? 'var(--lime)' : 'var(--text-3)',
-                borderColor: r.status === 'Registrada' ? 'var(--lime-border)' : 'var(--border)'
+                background: r.status === 'Registrada' ? 'var(--primary-dim)' : 'var(--surface-3)', 
+                color: r.status === 'Registrada' ? 'var(--primary)' : 'var(--text-3)',
+                borderColor: 'transparent',
               }}>
                 {r.status.toUpperCase()}
               </span>
