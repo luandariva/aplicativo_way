@@ -21,7 +21,7 @@ export default function Login() {
       <div className="anim" style={{ width: '100%', maxWidth: 420, margin: '0 auto' }}>
         <div style={{ marginBottom: 24 }}>
           <p className="overline">Acesso</p>
-          <div style={{ marginTop: 8 }}>
+          <div style={{ marginTop: 8, display: 'flex', justifyContent: 'center' }}>
             <img
               src="/logo_way_512.svg"
               alt="Way"
@@ -34,9 +34,6 @@ export default function Login() {
               }}
             />
           </div>
-          <p style={{ color: 'var(--text-2)', fontSize: 14, marginTop: 8, maxWidth: 320, lineHeight: 1.45 }}>
-            Treino e nutrição com precisão. Sem distrações.
-          </p>
         </div>
 
         <div className="plate plate-3 plate-pad-lg" style={{
