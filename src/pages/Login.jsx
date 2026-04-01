@@ -21,9 +21,19 @@ export default function Login() {
       <div className="anim" style={{ width: '100%', maxWidth: 420, margin: '0 auto' }}>
         <div style={{ marginBottom: 24 }}>
           <p className="overline">Acesso</p>
-          <h1 className="display" style={{ fontSize: 40, marginTop: 6 }}>
-            Alimenta Aí
-          </h1>
+          <div style={{ marginTop: 8 }}>
+            <img
+              src="/logo_way_512.svg"
+              alt="Way"
+              style={{
+                height: 110,
+                width: 'auto',
+                maxWidth: '100%',
+                display: 'block',
+                objectFit: 'contain',
+              }}
+            />
+          </div>
           <p style={{ color: 'var(--text-2)', fontSize: 14, marginTop: 8, maxWidth: 320, lineHeight: 1.45 }}>
             Treino e nutrição com precisão. Sem distrações.
           </p>
